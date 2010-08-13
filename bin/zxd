@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby -w
+require 'rubygems'
+
+# DONT COMMIT
+$:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
+
+require 'zxing'
+include ZXing
+
+require 'optparse'
+
+options = {
+  :rotation => 0
+}
+
+OptionParser.new do |o|
+  o.on('-r', '--rotate rotation') do |r|
+    options[:rotation] = r
+  end
+  o.on('-l', '--luminance luminance_file') do |l|
+    options[:luminance] = l
+  end
+  o.on('-b', '--binary binary_file') do |b|
+    options[:binary] = b
+  end
+  o.on('-t', '--tryharder') do |th|
+    options[:th] = th
+  end
+end.parse!
+
+reader = MultiFormatReader.new
+
+ARGV.each do |filename|
+  image = Image.read filename
+  rotated = image.rotate options[:rotation].to_f
+  source = LuminanceSource.new rotated
+  if options[:luminance]
+    source.image.write options[:luminance]+".png"
+  end
+  binarizer = HybridBinarizer.new source
+  if options[:binary]
+    binarizer.image.write options[:binary]+".png"
+  end
+  bitmap = BinaryBitmap.new binarizer
+
+  result = reader.decode bitmap, options[:th] ? { :try_harder => true } : nil
+
+  puts result.text
+end

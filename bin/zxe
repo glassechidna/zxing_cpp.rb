@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# -*- mode: ruby -*-
+
+require 'zxing/cli'
+
+begin
+  ZXing::CLI.start
+rescue ZXing::ZXingError => e
+  ZXing.ui.error e.message
+  ZXing.ui.error e.backtrace.join("\n") if ENV["BUNDLE_DEBUG"]
+  exit e.status_code
+rescue Interrupt
+  ZXing.ui.error "\nQuitting..."
+  exit 1
+end
