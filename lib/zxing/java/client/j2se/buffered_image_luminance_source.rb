@@ -1,7 +1,13 @@
 module ZXing; end
 module ZXing::Java; end
+module ZXing::Java::Client; end
+module ZXing::Java::Client::J2SE; end
 
-class ZXing::Java::BufferedImageLuminanceSource < ZXing::Java::LuminanceSource
+require 'zxing/javase.jar'
+
+class ZXing::Java::Client::J2SE::BufferedImageLuminanceSource <
+    ZXing::Java::LuminanceSource
+
   def initialize image, left = nil, top = nil, width = nil, height = nil
     left == nil && left = 0
     top == nil && top = 0

@@ -5,7 +5,7 @@ module ZXing::RMagick; end
 
 class ZXing::RMagick::Image 
   include ZXing::Image
-  LuminanceSource = ZXing::CPP::GreyscaleLuminanceSource
+  LuminanceSource = ZXing::FFI::Common::GreyscaleLuminanceSource
 
   def self.read uri
     img = Magick::Image.read(uri)[0]

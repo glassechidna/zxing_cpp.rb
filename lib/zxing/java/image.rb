@@ -1,12 +1,11 @@
 module ZXing; end
 module ZXing::Java; end
 
-require 'zxing/javase.jar'
-
 class ZXing::Java::Image
   include ZXing::Image
 
-  LuminanceSource = ZXing::Java::BufferedImageLuminanceSource
+  LuminanceSource =
+    ZXing::Java::Client::J2SE::BufferedImageLuminanceSource
 
   def self.read uri
     file = java::io::File.new uri

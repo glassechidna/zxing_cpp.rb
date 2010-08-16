@@ -1,16 +1,16 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::Result
+class ZXing::FFI::Result
   include ZXing::Result
 
   def format
-    enum = ZXing::CPP::FFI.Result_getBarcodeFormat @native
-    ZXing::CPP::FFI.BarcodeFormat_enum_to_string enum
+    enum = ZXing::FFI::Library.Result_getBarcodeFormat @native
+    ZXing::FFI::Library.BarcodeFormat_enum_to_string enum
   end
 
   def text
-    ZXing::CPP::FFI.String_string ZXing::CPP::FFI::StringPointer.new(ZXing::CPP::FFI.Result_getText(@native))
+    ZXing::FFI::Library.String_string ZXing::FFI::Library::StringPointer.new(ZXing::FFI::Library.Result_getText(@native))
   end
 
   def metadata

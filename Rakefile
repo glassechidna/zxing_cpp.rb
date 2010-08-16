@@ -5,8 +5,8 @@ java = RUBY_PLATFORM =~ /java/
 gem "hoe", "~> 2.5"
 require 'hoe'
 if !java
-  gem "rake-compiler", "~> 0.7"
-  require "rake/extensiontask"
+  # gem "rake-compiler", "~> 0.7"
+  # require "rake/extensiontask"
 end
 
 Hoe.plugin :debugging, :doofus, :git
@@ -18,11 +18,11 @@ HOE = Hoe.spec 'zxing' do
   self.extra_rdoc_files         = FileList["*.rdoc"]
   self.history_file             = "CHANGELOG.rdoc"
   self.readme_file              = "README.rdoc"
-  self.spec_extras[:extensions] = %w(ext/zxing/extconf.rb)
+  # self.spec_extras[:extensions] = %w(ext/zxing/extconf.rb)
 
   extra_dev_deps << ['rake-compiler', "~> 0.7.0"]
 
-  if !java
+  if false && !java
     Rake::ExtensionTask.new "zxing", spec do |ext|
       ext.lib_dir = "lib/zxing"
       ext.source_pattern = "*.{cc,h}"
@@ -83,6 +83,20 @@ if java
     cp "#{zxing}/javases/javase.jar", "lib/zxing/javase.jar"
   end    
   task :compile => [ "compile:core", "compile:javase" ]
+end
+
+if !java
+  file "lib/zxing/Makfile" => "lib/zxing/extconf.rb" do
+    Dir.chdir "lib/zxing" do
+      ruby "extconf.rb"
+    end
+  end
+  file "lib/zxing/zxing.bundle" => [ "lib/zxing/Makfile",
+                                     "lib/zxing/zxing.cc",
+                                     "vendor/zxing/cpp/build/libzxing.dylib" ] do
+    sh "cd lib/zxing && make"
+  end
+  task :compile => "lib/zxing/zxing.bundle"
 end
 
 namespace :test do

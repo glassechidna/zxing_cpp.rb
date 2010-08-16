@@ -1,15 +1,15 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::Binarizer
+class ZXing::FFI::Binarizer
   include ZXing::Binarizer
   def initialize ptr, source
-    super ZXing::CPP::FFI::BinarizerPointer.new ptr
+    super ZXing::FFI::Library::BinarizerPointer.new ptr
     @source = source
   end
   attr_reader :source
   def black_matrix
-    ZXing::CPP::BitMatrix.new ZXing::CPP::FFI.Binarizer_black_matrix(native)
+    ZXing::FFI::BitMatrix.new ZXing::FFI::Library.Binarizer_black_matrix(native)
   end
   def image
     width = source.width

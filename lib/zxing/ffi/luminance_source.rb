@@ -1,18 +1,18 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::LuminanceSource
+class ZXing::FFI::LuminanceSource
   include ZXing::LuminanceSource
   def initialize ptr
-    super ZXing::CPP::FFI::LuminanceSourcePointer.new ptr
+    super ZXing::FFI::Library::LuminanceSourcePointer.new ptr
   end
   def width
-    ZXing::CPP::FFI.LuminanceSource_width native
+    ZXing::FFI::Library.LuminanceSource_width native
   end
   def height
-    ZXing::CPP::FFI.LuminanceSource_height native
+    ZXing::FFI::Library.LuminanceSource_height native
   end
   def matrix
-    ZXing::CPP::FFI.LuminanceSource_matrix native
+    ZXing::FFI::Library.LuminanceSource_matrix native
   end
 end

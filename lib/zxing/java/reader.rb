@@ -22,7 +22,11 @@ class ZXing::Java::Reader
     begin
       ZXing::Java::Result.new native.decode(bitmap.native, native_hints)
     rescue Java::com::google::zxing::NotFoundException => nfe
-      raise ZXing::NotFoundException.new nfe.message
+      raise ZXing::NotFoundException.new nfe.message.sub %r{: null$},""
+    rescue Java::com::google::zxing::FormatException => fe
+      raise ZXing::FormatException.new fe.message.sub %r{: null$},""
+    rescue Java::com::google::zxing::ChecksumException => ce
+      raise ZXing::ChecksumException.new ce.message.sub %r{: null$},""
     end
   end
 end

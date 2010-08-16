@@ -6,7 +6,7 @@ module ZXing::MultiFormatReader
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::MultiFormatReader
   else
-    Class = ZXing::CPP::MultiFormatReader
+    Class = ZXing::FFI::MultiFormatReader
   end
 
   def self.new *args

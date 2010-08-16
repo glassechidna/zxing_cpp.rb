@@ -1,14 +1,14 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
 require 'iconv'
 require 'ffi'
 
-module ZXing::CPP::FFI
+module ZXing::FFI::Library
   extend ::FFI::Library
-  lib = File.join File.dirname(__FILE__), "..", ".."
+  lib = File.join File.dirname(__FILE__), ".."
   lib = File.expand_path lib
-  ffi_lib FFI::Library::LIBC,
+  ffi_lib ::FFI::Library::LIBC,
           Dir[lib.to_s+"/zxing.{bundle,dylib,so,dll,sl}"][0]
 
   attach_function 'free', [:pointer], :void
@@ -51,49 +51,49 @@ module ZXing::CPP::FFI
 
   class ReaderPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::Reader_delete ptr
+      ZXing::FFI::FFI::Reader_delete ptr
     end
   end
 
   class ResultPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::Result_delete ptr
+      ZXing::FFI::FFI::Result_delete ptr
     end
   end
 
   class LuminanceSourcePointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::LuminanceSource_delete ptr
+      ZXing::FFI::FFI::LuminanceSource_delete ptr
     end
   end
 
   class BinarizerPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::Binarizer_delete ptr
+      ZXing::FFI::FFI::Binarizer_delete ptr
     end
   end
 
   class BinaryBitmapPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::BinaryBitmap_delete ptr
+      ZXing::FFI::FFI::BinaryBitmap_delete ptr
     end
   end
 
   class DecodeHintsPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::DecodeHints_delete ptr
+      ZXing::FFI::FFI::DecodeHints_delete ptr
     end
   end
 
   class StringPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::String_delete ptr
+      ZXing::FFI::FFI::String_delete ptr
     end
   end
 
   class BitMatrixPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::CPP::FFI::BitMatrix_delete ptr
+      ZXing::FFI::FFI::BitMatrix_delete ptr
     end
   end
 

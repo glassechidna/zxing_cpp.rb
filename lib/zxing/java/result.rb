@@ -15,7 +15,13 @@ class ZXing::Java::Result
   end
 
   def metadata
-    native.resultMetadata
+    hash = {}
+    if native.resultMetadata
+      native.resultMetadata.keys.each do |key|
+        hash[key.to_s] = native.resultMetadata.get(key)
+      end
+    end
+    hash
   end
 
 end

@@ -1,9 +1,9 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::DataMatrixReader < ZXing::CPP::Reader
+class ZXing::FFI::DataMatrixReader < ZXing::FFI::Reader
   include ZXing::DataMatrixReader
   def initialize
-    super ZXing::CPP::FFI.DataMatrixReader_new
+    super ZXing::FFI::FFI.DataMatrixReader_new
   end
 end

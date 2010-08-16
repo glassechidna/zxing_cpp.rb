@@ -103,6 +103,7 @@ end
 
   case driver[:reader]
   when "DataMatrixReader"; reader = ZXing::DataMatrix::DataMatrixReader
+  when "Code39Reader"; reader = ZXing::OneD::Code39Reader
   else; reader = ZXing.const_get(driver[:reader])
   end
 
@@ -131,7 +132,7 @@ end
       mustPass, tryHarder, rotation = *params
       rotated = image.rotate rotation
       source = LuminanceSource.new rotated
-      binarizer = HybridBinarizer.new source
+      binarizer = Common::HybridBinarizer.new source
       bitmap = BinaryBitmap.new binarizer
 
       decode = lambda do |try_harder|
@@ -148,6 +149,12 @@ end
           return false
         rescue ReaderException => re
           puts re.message + suffix
+          return false
+        rescue FormatException => fe
+          puts fe.message + suffix
+          return false
+        rescue ChecksumException => ce
+          puts ce.message + suffix
           return false
         end
 

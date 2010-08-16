@@ -1,9 +1,9 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::MultiFormatReader < ZXing::CPP::Reader
+class ZXing::FFI::MultiFormatReader < ZXing::FFI::Reader
   include ZXing::MultiFormatReader
   def initialize
-    super ZXing::CPP::FFI.MultiFormatReader_new
+    super ZXing::FFI::Library.MultiFormatReader_new
   end
 end

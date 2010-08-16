@@ -1,15 +1,16 @@
 module ZXing; end
+module ZXing::Common; end
 
-module ZXing::HybridBinarizer
+module ZXing::Common::HybridBinarizer
   include ZXing::Binarizer
   if RUBY_PLATFORM == "java"
-    Class = ZXing::Java::HybridBinarizer
+    Class = ZXing::Java::Common::HybridBinarizer
   else
-    Class = ZXing::CPP::HybridBinarizer
+    Class = ZXing::FFI::Common::HybridBinarizer
   end
 
   def self.new *args
-    if self == ZXing::HybridBinarizer
+    if self == ZXing::Common::HybridBinarizer
       Class.new(*args)
     else
       super

@@ -1,16 +1,17 @@
 module ZXing; end
+module ZXing::OneD; end
 
-module ZXing::Code39Reader
+module ZXing::OneD::Code39Reader
   extend ZXing::Reader
 
   if RUBY_PLATFORM == "java"
-    Class = ZXing::Java::Code39Reader
+    Class = ZXing::Java::OneD::Code39Reader
   else
-    Class = ZXing::CPP::Code39Reader
+    Class = ZXing::FFI::OneD::Code39Reader
   end
 
   def self.new *args
-    if self == ZXing::Code39Reader
+    if self == ZXing::OneD::Code39Reader
       Class.new(*args)
     else
       super

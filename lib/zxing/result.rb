@@ -4,7 +4,7 @@ module ZXing::Result
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::Result
   else
-    Class = ZXing::CPP::Result
+    Class = ZXing::FFI::Result
   end
 
   def self.new *args

@@ -1,12 +1,12 @@
 module ZXing; end
-module ZXing::CPP; end
+module ZXing::FFI; end
 
-class ZXing::CPP::BinaryBitmap
+class ZXing::FFI::BinaryBitmap
   include ZXing::BinaryBitmap
   def initialize binarizer
-    super ZXing::CPP::FFI::BinaryBitmapPointer.new ZXing::CPP::FFI.BinaryBitmap_new(binarizer.native)
+    super ZXing::FFI::Library::BinaryBitmapPointer.new ZXing::FFI::Library.BinaryBitmap_new(binarizer.native)
   end
   def count
-    ZXing::CPP::FFI.BinaryBitmap_count @native
+    ZXing::FFI::Library.BinaryBitmap_count @native
   end
 end
