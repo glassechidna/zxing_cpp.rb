@@ -65,7 +65,10 @@ task(:test).clear
 
 zxing = "vendor/zxing"
 
-subdirs = [ :qrcode, :datamatrix, :negative, :oned, :pdf417 ]
+subdirs = [ :qrcode, :datamatrix, :negative, :oned ]
+if java
+  subdirs << :pdf417
+end
 
 if java
   namespace :compile do
@@ -83,6 +86,7 @@ if java
     cp "#{zxing}/javases/javase.jar", "lib/zxing/javase.jar"
   end    
   task :compile => [ "compile:core", "compile:javase" ]
+  task :recompile => :compile
 end
 
 if !java

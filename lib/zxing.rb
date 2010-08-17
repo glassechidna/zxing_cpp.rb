@@ -20,7 +20,7 @@ module ZXing
   autoload :ChecksumException, 'zxing/checksum_exception'
   autoload :FormatException, 'zxing/format_exception'
 
-  autoload :DataMatrix, 'zxing/data_matrix'
+  autoload :DataMatrix, 'zxing/datamatrix'
   autoload :OneD, 'zxing/oned'
   autoload :Common, 'zxing/common'
   autoload :PDF417, 'zxing/pdf417'

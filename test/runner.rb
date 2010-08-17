@@ -271,7 +271,7 @@ end
   print "TOTALS:\n  Decoded #{total_found} images out of #{total_tests}" +
     " (#{total_found * 100 / total_tests}%"
   print ", #{total_did_pass} of #{total_must_pass} required"
-  puts ")"
+  puts ") "+driver[:dir]
   if total_did_pass > total_must_pass
     puts "  *** Test too lax by #{total_found - total_must_pass} images"
   elsif total_did_pass < total_must_pass
