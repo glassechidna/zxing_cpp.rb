@@ -7,7 +7,8 @@ class ZXing::FFI::Reader
     super ZXing::FFI::Library::ReaderPointer.new ptr
   end
 
-  def decode bitmap, hints = {}
+  def decode bitmap, hints = nil
+    hints ||= {}
     native_hints = ZXing::FFI::Library::
       DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_new(0))
     hints.each do |k, v|

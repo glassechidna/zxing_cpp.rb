@@ -91,10 +91,20 @@ if !java
       ruby "extconf.rb"
     end
   end
+  file "vendor/zxing/cpp/build/libzxing.dylib" do
+    Dir.chdir "vendor/zxing/cpp" do
+      sh "scons lib"
+    end
+  end
   file "lib/zxing/zxing.bundle" => [ "lib/zxing/Makfile",
                                      "lib/zxing/zxing.cc",
                                      "vendor/zxing/cpp/build/libzxing.dylib" ] do
     sh "cd lib/zxing && make"
+  end
+  task :recompile do
+    file("vendor/zxing/cpp/build/libzxing.dylib").execute
+    rm "lib/zxing/zxing.bundle"
+    file("lib/zxing/zxing.bundle").execute
   end
   task :compile => "lib/zxing/zxing.bundle"
 end

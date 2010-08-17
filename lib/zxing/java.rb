@@ -17,11 +17,5 @@ module ZXing::Java
   autoload :OneD, 'zxing/java/oned'
   autoload :DataMatrix, 'zxing/java/data_matrix'
   autoload :Client, 'zxing/java/client'
-
-  # autoload :DataMatrixReader, 'zxing/java/data_matrix_reader'
-  # autoload :HybridBinarizer, 'zxing/java/hybrid_binarizer'
-  # autoload :BufferedImageLuminanceSource, 'zxing/java/buffered_image_luminance_source'
-  # autoload :BitMatrix, 'zxing/java/bit_matrix'
-  # autoload :Code39Reader, 'zxing/java/code_39_reader'
-
+  autoload :QRCode, 'zxing/java/qrcode'
 end

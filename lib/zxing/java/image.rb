@@ -13,8 +13,13 @@ class ZXing::Java::Image
     self.new img
   end
 
-  def write filename
-    file = java::io::File.new filename
+  def write file
+    case file
+    when String; file = java::io::File.new file
+    when STDOUT; file = java::system::out
+    when STDERR; file = java::system::err
+    else; raise "don't know how to map file #{file}"
+    end
     javax::imageio::ImageIO.write native, "png", file
   end
 

@@ -9,4 +9,7 @@ class ZXing::FFI::BinaryBitmap
   def count
     ZXing::FFI::Library.BinaryBitmap_count @native
   end
+  def black_matrix
+    ZXing::FFI::Common::BitMatrix.new ZXing::FFI::Library.BinaryBitmap_black_matrix(native)
+  end
 end

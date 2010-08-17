@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w
+#!/usr/bin/env ruby
 require 'rubygems'
 
 # DONT COMMIT
@@ -23,12 +23,21 @@ OptionParser.new do |o|
   o.on('-b', '--binary binary_file') do |b|
     options[:binary] = b
   end
+  o.on('-a', '--ascii ascii_file') do |b|
+    options[:ascii] = a
+  end
   o.on('-t', '--tryharder') do |th|
     options[:th] = th
   end
+  o.on('-q', '--qr') do |th|
+    options[:qr] = true
+  end
 end.parse!
 
-reader = MultiFormatReader.new
+reader = nil
+if !options[:qr]
+  reader = MultiFormatReader.new
+end
 
 ARGV.each do |filename|
   image = Image.read filename
@@ -37,13 +46,23 @@ ARGV.each do |filename|
   if options[:luminance]
     source.image.write options[:luminance]+".png"
   end
-  binarizer = HybridBinarizer.new source
+  binarizer = Common::HybridBinarizer.new source
   if options[:binary]
     binarizer.image.write options[:binary]+".png"
   end
   bitmap = BinaryBitmap.new binarizer
 
-  result = reader.decode bitmap, options[:th] ? { :try_harder => true } : nil
+  result = nil
+  if options[:qr]
+    detector = QRCode::Detector.new bitmap.black_matrix
+    result = detector.detect
+    if options[:ascii]
+      raise "hell"
+    end
+    result = QRCode::Decoder.new.decode result
+  else
+    result = reader.decode bitmap, options[:th] ? { :try_harder => true } : nil
+  end
 
   puts result.text
 end

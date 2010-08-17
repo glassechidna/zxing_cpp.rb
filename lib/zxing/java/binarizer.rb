@@ -9,7 +9,7 @@ class ZXing::Java::Binarizer
   end
   attr_reader :source
   def black_matrix
-    ZXing::Java::BitMatrix.new native.getBlackMatrix
+    ZXing::Java::Common::BitMatrix.new native.getBlackMatrix
   end
   def image
     width = source.width

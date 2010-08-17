@@ -121,6 +121,11 @@ extern "C" {
     return new zxing::Ref<zxing::BitMatrix>((*ref)->getBlackMatrix());
   }
 
+  void* BinaryBitmap_black_matrix(void* ref_ptr) {
+    zxing::Ref<zxing::BinaryBitmap>* ref = (zxing::Ref<zxing::BinaryBitmap>*)ref_ptr;
+    return new zxing::Ref<zxing::BitMatrix>((*ref)->getBlackMatrix());
+  }
+
   bool BitMatrix_get(void* ref_ptr, int x, int y) {
     zxing::Ref<zxing::BitMatrix>* ref = (zxing::Ref<zxing::BitMatrix>*)ref_ptr;
     return (*ref)->get(x, y);

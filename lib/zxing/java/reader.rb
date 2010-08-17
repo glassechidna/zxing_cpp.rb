@@ -15,6 +15,15 @@ class ZXing::Java::Reader
       when :try_harder
         native_hints[Java::com::google::zxing::DecodeHintType::TRY_HARDER] =
           java::lang::Boolean::TRUE
+      when :possible_formats
+        vector = java::util::Vector.new
+        v.each do |value|
+          vector.add case value
+                     when :PDF417; Java::com::google::zxing::BarcodeFormat::PDF417
+                     else; raise "#{value} format needs implementation"
+                     end
+        end
+        native_hints[Java::com::google::zxing::DecodeHintType::POSSIBLE_FORMATS] = vector
       else
         raise "implement #{k} #{v}"
       end

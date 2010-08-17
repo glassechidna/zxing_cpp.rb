@@ -9,7 +9,7 @@ class ZXing::FFI::Binarizer
   end
   attr_reader :source
   def black_matrix
-    ZXing::FFI::BitMatrix.new ZXing::FFI::Library.Binarizer_black_matrix(native)
+    ZXing::FFI::Common::BitMatrix.new ZXing::FFI::Library.Binarizer_black_matrix(native)
   end
   def image
     width = source.width

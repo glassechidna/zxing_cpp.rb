@@ -1,15 +1,53 @@
 #!/usr/bin/env ruby
-# -*- mode: ruby -*-
+require 'rubygems'
 
-require 'zxing/cli'
+# DONT COMMIT
+$:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
 
-begin
-  ZXing::CLI.start
-rescue ZXing::ZXingError => e
-  ZXing.ui.error e.message
-  ZXing.ui.error e.backtrace.join("\n") if ENV["BUNDLE_DEBUG"]
-  exit e.status_code
-rescue Interrupt
-  ZXing.ui.error "\nQuitting..."
-  exit 1
+require 'zxing'
+include ZXing
+
+require 'optparse'
+
+options = { :ecc => :l }
+
+OptionParser.new do |o|
+  o.on('-i', '--input filename') do |r|
+    options[:input] = r
+  end
+  o.on('-o', '--output filename') do |r|
+    options[:output] = r
+  end
+  o.on('-h') do
+    options[:ecc] = :h
+  end
+  o.on('-m') do
+    options[:ecc] = :m
+  end
+  o.on('-q') do
+    options[:ecc] = :q
+  end
+  o.on('-l') do
+    options[:ecc] = :l
+  end
+end.parse!
+
+input = nil
+if options[:input]
+  input = File.read(options[:input])
+else
+  input = ARGV[0]
+end
+
+code = QRCode::Encoder::QRCode.new
+QRCode::Encoder::Encoder::encode input, options[:ecc], code
+
+output = options[:output] || STDOUT
+
+code.matrix.image.write output
+
+if output == STDOUT
+  if output.tty?
+    output.puts
+  end
 end
