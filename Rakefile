@@ -22,6 +22,11 @@ HOE = Hoe.spec 'zxing' do
 
   extra_dev_deps << ['rake-compiler', "~> 0.7.0"]
 
+  clean_globs << "**/*.a"
+  clean_globs << "**/*.so"
+  clean_globs << "**/*.bundle"
+  clean_globs << "lib/zxing/Makefile"
+
   if false && !java
     Rake::ExtensionTask.new "zxing", spec do |ext|
       ext.lib_dir = "lib/zxing"
@@ -90,23 +95,24 @@ if java
 end
 
 if !java
-  file "lib/zxing/Makfile" => "lib/zxing/extconf.rb" do
-    Dir.chdir "lib/zxing" do
-      ruby "extconf.rb"
-    end
-  end
-  file "vendor/zxing/cpp/build/libzxing.dylib" do
+  file "vendor/zxing/cpp/build/libzxing.a" do
     Dir.chdir "vendor/zxing/cpp" do
       sh "python scons/scons.py PIC=yes lib"
     end
   end
+  file "lib/zxing/Makfile" => [ "lib/zxing/extconf.rb",
+                                "vendor/zxing/cpp/build/libzxing.a" ] do
+    Dir.chdir "lib/zxing" do
+      ruby "extconf.rb"
+    end
+  end
   file "lib/zxing/zxing.bundle" => [ "lib/zxing/Makfile",
                                      "lib/zxing/zxing.cc",
-                                     "vendor/zxing/cpp/build/libzxing.dylib" ] do
+                                     "vendor/zxing/cpp/build/libzxing.a" ] do
     sh "cd lib/zxing && make"
   end
   task :recompile do
-    file("vendor/zxing/cpp/build/libzxing.dylib").execute
+    file("vendor/zxing/cpp/build/libzxing.a").execute
     rm "lib/zxing/zxing.bundle"
     file("lib/zxing/zxing.bundle").execute
   end
