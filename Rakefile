@@ -25,7 +25,9 @@ HOE = Hoe.spec 'zxing' do
   clean_globs << "**/*.a"
   clean_globs << "**/*.so"
   clean_globs << "**/*.bundle"
+  clean_globs << "**/*.dylib"
   clean_globs << "lib/zxing/Makefile"
+  clean_globs << "lib/zxing/zxing.o"
 
   if false && !java
     Rake::ExtensionTask.new "zxing", spec do |ext|
@@ -35,6 +37,15 @@ HOE = Hoe.spec 'zxing' do
   end
 
   
+end
+
+shared_ext = ".so"
+Dir["lib/zxing/zxing.*"].each do |file|
+  case file
+  when %r{\.so$}; shared_ext = ".so"
+  when %r{\.dylib$}; shared_ext = ".dylib"
+  when %r{\.bundle$}; shared_ext = ".bundle"
+  end
 end
 
 file "vendor/zxing/.git" do
@@ -100,23 +111,23 @@ if !java
       sh "python scons/scons.py PIC=yes lib"
     end
   end
-  file "lib/zxing/Makfile" => [ "lib/zxing/extconf.rb",
-                                "vendor/zxing/cpp/build/libzxing.a" ] do
+  file "lib/zxing/Makefile" => [ "lib/zxing/extconf.rb",
+                                 "vendor/zxing/cpp/build/libzxing.a" ] do
     Dir.chdir "lib/zxing" do
       ruby "extconf.rb"
     end
   end
-  file "lib/zxing/zxing.bundle" => [ "lib/zxing/Makfile",
-                                     "lib/zxing/zxing.cc",
-                                     "vendor/zxing/cpp/build/libzxing.a" ] do
+  file "lib/zxing/zxing#{shared_ext}" => [ "lib/zxing/Makefile",
+                                           "lib/zxing/zxing.cc",
+                                           "vendor/zxing/cpp/build/libzxing.a" ] do
     sh "cd lib/zxing && make"
   end
   task :recompile do
     file("vendor/zxing/cpp/build/libzxing.a").execute
-    rm "lib/zxing/zxing.bundle"
-    file("lib/zxing/zxing.bundle").execute
+    rm "lib/zxing/zxing#{shared_ext}"
+    file("lib/zxing/zxing#{shared_ext}").execute
   end
-  task :compile => "lib/zxing/zxing.bundle"
+  task :compile => "lib/zxing/zxing#{shared_ext}"
 end
 
 namespace :test do
