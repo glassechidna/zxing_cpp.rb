@@ -11,7 +11,8 @@
 #include <zxing/common/IllegalArgumentException.h>
 #include <zxing/common/Str.h>
 
-#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 using namespace std;
 

@@ -97,7 +97,7 @@ if !java
   end
   file "vendor/zxing/cpp/build/libzxing.dylib" do
     Dir.chdir "vendor/zxing/cpp" do
-      sh "scons lib"
+      sh "python scons/scons.py PIC=yes lib"
     end
   end
   file "lib/zxing/zxing.bundle" => [ "lib/zxing/Makfile",

@@ -52,49 +52,49 @@ module ZXing::FFI::Library
 
   class ReaderPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::Reader_delete ptr
+      ZXing::FFI::Library::Reader_delete ptr
     end
   end
 
   class ResultPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::Result_delete ptr
+      ZXing::FFI::Library::Result_delete ptr
     end
   end
 
   class LuminanceSourcePointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::LuminanceSource_delete ptr
+      ZXing::FFI::Library::LuminanceSource_delete ptr
     end
   end
 
   class BinarizerPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::Binarizer_delete ptr
+      ZXing::FFI::Library::Binarizer_delete ptr
     end
   end
 
   class BinaryBitmapPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::BinaryBitmap_delete ptr
+      ZXing::FFI::Library::BinaryBitmap_delete ptr
     end
   end
 
   class DecodeHintsPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::DecodeHints_delete ptr
+      ZXing::FFI::Library::DecodeHints_delete ptr
     end
   end
 
   class StringPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::String_delete ptr
+      ZXing::FFI::Library::String_delete ptr
     end
   end
 
   class BitMatrixPointer < FFI::AutoPointer
     def self.release ptr
-      ZXing::FFI::FFI::BitMatrix_delete ptr
+      ZXing::FFI::Library::BitMatrix_delete ptr
     end
   end
 
