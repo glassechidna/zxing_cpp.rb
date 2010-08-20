@@ -4,10 +4,6 @@ java = RUBY_PLATFORM =~ /java/
 
 gem "hoe", "~> 2.5"
 require 'hoe'
-if !java
-  # gem "rake-compiler", "~> 0.7"
-  # require "rake/extensiontask"
-end
 
 Hoe.plugin :debugging, :doofus, :git
 Hoe.plugins.delete :rubyforge
@@ -18,16 +14,15 @@ HOE = Hoe.spec 'zxing' do
   self.extra_rdoc_files         = FileList["*.rdoc"]
   self.history_file             = "CHANGELOG.rdoc"
   self.readme_file              = "README.rdoc"
-  # self.spec_extras[:extensions] = %w(ext/zxing/extconf.rb)
 
-  extra_dev_deps << ['rake-compiler', "~> 0.7.0"]
-
-  clean_globs << "**/*.a"
-  clean_globs << "**/*.so"
-  clean_globs << "**/*.bundle"
-  clean_globs << "**/*.dylib"
-  clean_globs << "lib/zxing/Makefile"
-  clean_globs << "lib/zxing/zxing.o"
+  if !java
+    clean_globs << "**/*.a"
+    clean_globs << "**/*.so"
+    clean_globs << "**/*.bundle"
+    clean_globs << "**/*.dylib"
+    clean_globs << "lib/zxing/Makefile"
+    clean_globs << "lib/zxing/zxing.o"
+  end
 
   if false && !java
     Rake::ExtensionTask.new "zxing", spec do |ext|
