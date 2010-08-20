@@ -2,3 +2,4 @@
 /lib/zxing/Makefile
 /lib/zxing/zxing.so
 /lib/zxing/zxing.bundle
+/pkg

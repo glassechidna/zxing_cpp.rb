@@ -15,23 +15,23 @@ HOE = Hoe.spec 'zxing' do
   self.history_file             = "CHANGELOG.rdoc"
   self.readme_file              = "README.rdoc"
 
-  if !java
+  self.spec_extras[:extensions] = %w(Rakefile)
+
+  if java
+    clean_globs << "vendor/zxing/core/core.jar"
+    clean_globs << "vendor/zxing/javase/javase.jar"
+  else
     clean_globs << "**/*.a"
     clean_globs << "**/*.so"
     clean_globs << "**/*.bundle"
     clean_globs << "**/*.dylib"
+    clean_globs << "**/*.pyc"
     clean_globs << "lib/zxing/Makefile"
     clean_globs << "lib/zxing/zxing.o"
+    clean_globs << "**/.sconsign.dblite"
   end
+  clean_globs << "**/build"
 
-  if false && !java
-    Rake::ExtensionTask.new "zxing", spec do |ext|
-      ext.lib_dir = "lib/zxing"
-      ext.source_pattern = "*.{cc,h}"
-    end
-  end
-
-  
 end
 
 shared_ext = ".so"
@@ -43,11 +43,11 @@ Dir["lib/zxing/zxing.*"].each do |file|
   end
 end
 
-file "vendor/zxing/.git" do
+file "vendor/zxing" do
   sh "git submodule update --init"
 end
 
-task :compile => "vendor/zxing/.git"
+task :compile => "vendor/zxing"
 
 Hoe.plugin :debugging, :doofus, :git
 Hoe.plugins.delete :rubyforge
@@ -82,6 +82,24 @@ if java
 end
 
 if java
+  if File.exists? "#{zxing}/core"
+    file "#{zxing}/core/core.jar" do
+      sh "ant -f #{zxing}/core/build.xml compile"
+    end
+    file "lib/zxing/core.jar" => "#{zxing}/core/core.jar" do
+      cp "#{zxing}/core/core.jar", "lib/zxing/core.jar"
+    end
+  end
+
+  if File.exists? "#{zxing}/javase"
+    file "#{zxing}/javase/javase.jar" => "#{zxing}/core/core.jar" do
+      sh "ant -f #{zxing}/javase/build.xml build"
+    end
+    file "lib/zxing/javase.jar" => "#{zxing}/javase/javase.jar" do
+      cp "#{zxing}/javase/javase.jar", "lib/zxing/javase.jar"
+    end
+  end
+
   namespace :compile do
     task :core do
       sh "ant -f #{zxing}/core/build.xml compile && cp #{zxing}/core/core.jar lib/zxing/core.jar"
@@ -90,14 +108,9 @@ if java
       sh "ant -f #{zxing}/javase/build.xml build && cp #{zxing}/javase/javase.jar lib/zxing/javase.jar"
     end
   end
-  file "lib/zxing/core.jar" => "#{zxing}/core/core.jar" do
-    cp "#{zxing}/core/core.jar", "lib/zxing/core.jar"
-  end
-  file "lib/zxing/javase.jar" => "#{zxing}/javase/javase.jar" do
-    cp "#{zxing}/javases/javase.jar", "lib/zxing/javase.jar"
-  end    
-  task :compile => [ "compile:core", "compile:javase" ]
-  task :recompile => :compile
+
+  task :compile => [ "lib/zxing/core.jar", "lib/zxing/javase.jar" ]
+  task :recompile => [ "compile:core", "compile:javase" ]
 end
 
 if !java
@@ -155,3 +168,10 @@ task :test, [ :pattern ] => :compile do |t, args|
 end
 
 task :default => :test
+
+if java
+  task :gem => [ "lib/zxing/core.jar", "lib/zxing/javase.jar" ]
+end
+
+# manifest stuff:
+# egrep -v '(/actionscript/|/zxingorg/|/zxing.appspot|symbian|/rim/|javame|zxing/jruby|/iphone/|csharp/|/test/|/bug/|/android|.git|.valgrind|.xcodeproj|vendor/zxing/core)' Manifest.txt | less
