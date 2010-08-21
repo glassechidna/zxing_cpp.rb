@@ -28,34 +28,32 @@ zxing.rb also comes with a command that decodes images: zxd:
   $ zxd filename.png
   <decoded contents>
 
-zxing.rb provides access to many of the classes of ZXing classes like readers, luminance sources, binarizers, so you can mix and match your own applications much as you would with a native Java or C++ app. See zxd and test/runner.rb for examples.
+zxing.rb provides access to many of the classes of ZXing classes like readers, luminance sources, binarizers, so you can mix and match your own applications much as you would with a native Java or C++ app. See zxd and test/vendor.rb for examples.
 
 == REQUIREMENTS:
 
-* ruby 1.8 or 1.9
+* ruby 1.8 or 1.9 or jruby (tested on 1.5)
+* rmagick on ruby 1.8 or 1.9
 
 zxing.rb bundles a version of zxing.
 
 == INSTALL:
 
-* sudo gem install zxing
+* gem install zxing
 
 == DEVELOPMENT:
 
-Developing ZXing requires rake-compiler.
+* rake test && rake zxing:test
 
-* rake install:deps
-* rake test
-
-rake test runs the standard ZXing blackbox tests.
+rake test runs the zxing.rb unit tests. rake zxing:test runs the standard ZXing blackbox tests. You can give rake zxing:test a paramter to only run matching tests (based on file globbing). For example, rake zxing:test[qrcode-2/1] will run the qrcode tests in set 2 that start with 1 (1, 10, 11, etc.)
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2010:
-
-* {Steven Parkes}[http://github/smparkes]
+Copyright (c) 2010
+{Ecin Krispie}[http://github/ecin],
+{Steven Parkes}[http://github/smparkes]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
