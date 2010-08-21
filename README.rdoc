@@ -107,7 +107,7 @@ set 2 that start with 1 (1, 10, 11, etc.)
 
 (The MIT License)
 
-Copyright (c) 2010 {Ecin Krispie}[http://github/ecin] {Steven Parkes}[http://github/smparkes]
+Copyright (c) 2010 {Ecin Krispie}[http://github.com/ecin] {Steven Parkes}[http://github.com/smparkes]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
