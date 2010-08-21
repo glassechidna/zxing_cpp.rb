@@ -14,6 +14,8 @@ module ZXing
   autoload :BinaryBitmap, 'zxing/binary_bitmap'
   autoload :Binarizer, 'zxing/binarizer'
 
+  autoload :Exception, 'zxing/exception'
+  autoload :BadImageException, 'zxing/bad_image_exception'
   autoload :NotFoundException, 'zxing/not_found_exception'
   autoload :ReaderException, 'zxing/reader_exception'
   autoload :IllegalArgumentException, 'zxing/illegal_argument_exception'
@@ -25,4 +27,23 @@ module ZXing
   autoload :Common, 'zxing/common'
   autoload :PDF417, 'zxing/pdf417'
   autoload :QRCode, 'zxing/qrcode'
+
+  def decode *args
+    begin
+      decode!(*args)
+    rescue Exception => e
+      nil
+    end
+  end
+
+  def decode! argument
+    image = Image.read argument
+    source = LuminanceSource.new image
+    binarizer = Common::HybridBinarizer.new source
+    bitmap = BinaryBitmap.new binarizer
+    ZXing::MultiFormatReader.new.decode(bitmap).text
+  end
+
+  module_function :decode, :decode!
+
 end

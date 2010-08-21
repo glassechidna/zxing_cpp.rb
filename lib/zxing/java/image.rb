@@ -8,8 +8,32 @@ class ZXing::Java::Image
     ZXing::Java::Client::J2SE::BufferedImageLuminanceSource
 
   def self.read uri
-    file = java::io::File.new uri
+    if !(String === uri)
+      begin uri = uri.path; rescue; end
+    end
+
+    if !(String === uri)
+      begin uri = uri.to_s; rescue; end
+    end
+
+    require 'uri'
+    require 'pathname'
+
+    uri = URI.parse uri
+    if uri.scheme.nil?
+      uri.scheme = "file"
+      uri.path = Pathname.new(uri.path).realpath.to_s
+    end
+    uri = case uri.scheme
+    when "file"; uri.to_s.sub(%r{:/}, ":///")
+    else; uri.to_s
+    end
+
+    file = java::net::URL.new uri
     img = javax::imageio::ImageIO.read file
+    if img.nil?
+      raise ZXing::BadImageException.new("could not interpret #{uri} as an image")
+    end
     self.new img
   end
 

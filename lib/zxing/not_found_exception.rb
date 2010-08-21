@@ -1,4 +1,4 @@
 module ZXing; end
 
-class ZXing::NotFoundException < Exception
+class ZXing::NotFoundException < ZXing::Exception
 end

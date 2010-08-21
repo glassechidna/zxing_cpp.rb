@@ -1,4 +1,4 @@
 module ZXing; end
 
-class ZXing::ReaderException < Exception
+class ZXing::ReaderException < ZXing::Exception
 end

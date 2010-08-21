@@ -17,6 +17,8 @@ HOE = Hoe.spec 'zxing' do
 
   self.spec_extras[:extensions] = %w(Rakefile)
 
+  extra_dev_deps << [ "shoulda", ">=0" ]
+
   if java
     clean_globs << "vendor/zxing/core/core.jar"
     clean_globs << "vendor/zxing/javase/javase.jar"
@@ -71,8 +73,6 @@ task :clean do
     end
   end
 end
-
-task(:test).clear
 
 zxing = "vendor/zxing"
 
@@ -138,36 +138,40 @@ if !java
   task :compile => "lib/zxing/zxing#{shared_ext}"
 end
 
-namespace :test do
-  subdirs.each do |subdir|
-    namespace subdir do
-      desc "run #{subdir} tests"
-      task :run do
-        args = [
-                # "ruby", "-Ilib",
-                "test/runner.rb" ] +
-          Dir["**/#{subdir}/*BlackBox*TestCase.java"]
-        args.unshift "valgrind" if ENV["valgrind"]
-        sh args.join(" ")
+namespace :zxing do
+  namespace :test do
+    subdirs.each do |subdir|
+      namespace subdir do
+        desc "run #{subdir} tests"
+        task :run do
+          args = [
+                  # "ruby", "-Ilib",
+                  "test/vendor.rb" ] +
+            Dir["**/#{subdir}/*BlackBox*TestCase.java"]
+          args.unshift "valgrind" if ENV["valgrind"]
+          sh args.join(" ")
+        end
       end
+      desc "compile and run #{subdir} tests"
+      task subdir => [ :compile, "test:#{subdir}:run" ]
     end
-    desc "compile and run #{subdir} tests"
-    task subdir => [ :compile, "test:#{subdir}:run" ]
+    task :run => subdirs.map { |subdir| "test:#{subdir}:run" }
   end
-  task :run => subdirs.map { |subdir| "test:#{subdir}:run" }
+
+  desc "run all the zxing tests (optionally, only those maching [pattern])"
+  task :test, [ :pattern ] => :compile do |t, args|
+    if args[:pattern]
+      args = [ "ruby", "-Ilib", "test/vendor.rb", args[:pattern] ]
+      args.unshift "valgrind" if ENV["valgrind"]
+      sh args.join(" ")
+    else
+      subdirs.each { |subdir| task("zxing:test:#{subdir}:run").execute }
+    end
+  end
 end
 
-task :test, [ :pattern ] => :compile do |t, args|
-  if args[:pattern]
-    args = [ "ruby", "-Ilib", "test/runner.rb", args[:pattern] ]
-    args.unshift "valgrind" if ENV["valgrind"]
-    sh args.join(" ")
-  else
-    subdirs.each { |subdir| task("test:#{subdir}:run").execute }
-  end
-end
-
-task :default => :test
+task(:default).clear
+task :default => :compile
 
 if java
   task :gem => [ "lib/zxing/core.jar", "lib/zxing/javase.jar" ]
