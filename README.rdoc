@@ -97,10 +97,10 @@ zxing.rb bundles a version of zxing.
 
   rake test && rake zxing:test
 
-<tt>rake test</tt> runs the zxing.rb unit tests. +rake zxing:test+ runs the
-standard ZXing blackbox tests. You can give +rake zxing:test+ a
+<tt>rake test</tt> runs the zxing.rb unit tests. <tt>rake zxing:test</tt> runs the
+standard ZXing blackbox tests. You can give <tt>rake zxing:test</tt> a
 parameter to only run matching tests (based on file globing). For
-example, +rake zxing:test[qrcode-2/1]+ will run the qrcode tests in
+example, <tt>rake zxing:test[qrcode-2/1]</tt> will run the qrcode tests in
 set 2 that start with 1 (1, 10, 11, etc.)
 
 == LICENSE:
