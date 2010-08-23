@@ -4,7 +4,11 @@ module ZXing::BinaryBitmap
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::BinaryBitmap
   else
-    Class = ZXing::FFI::BinaryBitmap
+    if defined? RUBY_ENGINE and RUBY_ENGINE == "macruby"
+      Class = ZXing::ObjC::BinaryBitmap
+    else
+      Class = ZXing::FFI::BinaryBitmap
+    end
   end
 
   def self.new *args

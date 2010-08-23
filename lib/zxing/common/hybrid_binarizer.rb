@@ -2,11 +2,14 @@ module ZXing; end
 module ZXing::Common; end
 
 module ZXing::Common::HybridBinarizer
-  include ZXing::Binarizer
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::Common::HybridBinarizer
   else
-    Class = ZXing::FFI::Common::HybridBinarizer
+    if defined? RUBY_ENGINE and RUBY_ENGINE == "macruby"
+      Class = ZXing::ObjC::Common::HybridBinarizer
+    else
+      Class = ZXing::FFI::Common::HybridBinarizer
+    end
   end
 
   def self.new *args
@@ -16,4 +19,9 @@ module ZXing::Common::HybridBinarizer
       super
     end
   end
+
+  def initialize *args
+    super *args
+  end
+
 end

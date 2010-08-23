@@ -4,7 +4,11 @@ module ZXing::Result
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::Result
   else
-    Class = ZXing::FFI::Result
+    if defined? RUBY_ENGINE and RUBY_ENGINE == "macruby"
+      Class = ZXing::ObjC::Result
+    else
+      Class = ZXing::FFI::Result
+    end
   end
 
   def self.new *args

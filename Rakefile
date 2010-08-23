@@ -1,6 +1,7 @@
 # -*- mode:ruby -*-
 
 java = RUBY_PLATFORM =~ /java/
+macruby = defined? RUBY_PLATFORM and RUBY_PLATFORM == "macruby"
 
 gem "hoe", "~> 2.5"
 require 'hoe'
@@ -113,7 +114,19 @@ if java
   task :recompile => [ "compile:core", "compile:javase" ]
 end
 
-if !java
+if macruby
+  file "vendor/zxing/objc/build/Debug/zxing.bundle" do
+    Dir.chdir "vendor/zxing/objc" do
+      raise "implement"
+    end
+  end
+  file "lib/zxing/objc/zxing.bundle" => "vendor/zxing/objc/build/Debug/zxing.bundle" do
+    cp "vendor/zxing/objc/build/Debug/zxing.bundle", "lib/zxing/objc/zxing.bundle"
+  end
+  task :compile => "lib/zxing/objc/zxing.bundle"
+end
+
+if !java && !macruby
   file "vendor/zxing/cpp/build/libzxing.a" do
     Dir.chdir "vendor/zxing/cpp" do
       sh "python scons/scons.py PIC=yes lib"

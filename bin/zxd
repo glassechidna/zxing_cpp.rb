@@ -13,6 +13,8 @@ options = {
   :rotation => 0
 }
 
+macruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == "macruby"
+
 OptionParser.new do |o|
   o.on('-r', '--rotate rotation') do |r|
     options[:rotation] = r
@@ -29,10 +31,23 @@ OptionParser.new do |o|
   o.on('-t', '--tryharder') do |th|
     options[:th] = th
   end
-  o.on('-q', '--qr') do |th|
+  o.on('-q', '--qr') do
     options[:qr] = true
   end
+  if macruby
+    o.on('-c', '--capture') do
+      options[:capture] = true
+    end
+    o.on('-p', '--preview') do
+      options[:preview] = true
+    end
+    o.on('--nopreview', '--no-preview') do
+      options[:preview] = false
+    end
+  end
 end.parse!
+
+options.has_key? :preview or options[:preview] = options[:capture]
 
 reader = nil
 if !options[:qr]
@@ -65,4 +80,227 @@ ARGV.each do |filename|
   end
 
   puts result.text
+end
+
+if macruby
+
+  framework 'AppKit'
+  framework 'QTKit'
+  framework 'QuartzCore'
+  framework 'CoreVideo'
+
+  class AppDelegate
+    def applicationDidFinishLaunching(notification)
+      @window = NSWindow.alloc.initWithContentRect([200, 300, 640, 480],
+                                                   styleMask:
+                                                   NSTitledWindowMask|
+                                                   NSClosableWindowMask|
+                                                   NSMiniaturizableWindowMask,
+                                                   backing:NSBackingStoreBuffered,
+                                                   defer:false)
+      @window.title      = 'MacRuby: The Definitive Guide'
+      @window.level      = 3
+      @window.delegate   = self
+
+      @window.display
+      @window.orderFrontRegardless
+      @window.makeMainWindow
+      @window.makeKeyWindow
+
+      @session  =  QTCaptureSession.alloc.init
+
+      device = QTCaptureDevice.defaultInputDeviceWithMediaType QTMediaTypeVideo
+      device.open nil
+      input = QTCaptureDeviceInput.deviceInputWithDevice device
+      @session.addInput input, error:nil
+
+      output = QTCaptureDecompressedVideoOutput.alloc.init
+      output.automaticallyDropsLateVideoFrames = true
+      output.delegate = self
+
+      key = KCVPixelBufferPixelFormatTypeKey
+      value = NSNumber.numberWithUnsignedInt KCVPixelFormatType_32BGRA
+      pixelBufferAttributes = NSDictionary.dictionaryWithObject value, forKey:key
+      pixelBufferAttributes = {KCVPixelBufferPixelFormatTypeKey:KCVPixelFormatType_32BGRA}
+      output.pixelBufferAttributes = pixelBufferAttributes
+      @session.addOutput output, error:nil
+      
+      main = CALayer.layer
+      main.frame = @window.contentView.frame
+      @window.contentView.layer = main
+      @window.contentView.wantsLayer = true
+
+      capture = QTCaptureLayer.alloc.initWithSession @session
+      capture.frame = @window.contentView.frame
+      mirror = CGAffineTransformMakeScale -1, 1
+      capture.affineTransform = mirror
+      main.addSublayer capture
+
+      frame = @window.contentView.frame
+      frame.origin.x = frame.size.width - frame.size.width*0.2;
+      frame.origin.y = 0;
+      frame.size.width = frame.size.width*0.2;
+      frame.size.height = frame.size.height*0.2;
+
+      @luminanceView = NSImageView.alloc.initWithFrame frame
+      @luminanceView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable
+      @window.contentView.addSubview @luminanceView
+
+      frame.origin.y += frame.size.height;
+      @binarizedView = NSImageView.alloc.initWithFrame frame
+
+      @binarizedView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable
+      @window.contentView.addSubview @binarizedView
+
+      @session.startRunning
+    end
+
+    def captureOutput captureOutput,
+      didOutputVideoFrame:videoFrame,
+      withSampleBuffer:sampleBuffer,
+      fromConnection:connection
+
+      p videoFrame
+
+      width = CVPixelBufferGetWidth videoFrame
+      # size_t height = CVPixelBufferGetHeight(videoFrame); 
+      # size_t bytesPerRow = CVPixelBufferGetBytesPerRow(videoFrame); 
+
+      # CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB(); 
+      # CGContextRef newContext =
+      #     CGBitmapContextCreate([sampleBuffer bytesForAllSamples], width, height, 8, bytesPerRow, colorSpace,
+      #                           kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst); 
+
+      # CGImageRef capture = CGBitmapContextCreateImage(newContext);
+
+      # unsigned char* data = new unsigned char[(int)(bytesPerRow*height)];
+
+      # CGColorSpaceRef gray = CGColorSpaceCreateDeviceGray();
+      # CGContextRef context = CGBitmapContextCreate (
+      #     data,
+      #     width,
+      #     height,
+      #     8,      // bits per component
+      #     bytesPerRow,
+      #     gray,
+      #     kCGImageAlphaNone);
+      # CGColorSpaceRelease(gray);
+      
+      # CGContextDrawImage(context,
+      #                    CGRectMake(0, 0, width, height),
+      #                    capture);
+      
+      # CGImageRelease(capture);
+
+      # CGImageRef grayed = CGBitmapContextCreateImage(context); 
+
+      # CGContextRelease(context);
+
+      # self.luminanceImage = [[NSImage alloc] initWithCGImage:grayed size:NSZeroSize];
+      # [self.luminanceImage release];
+
+      # CGImageRelease(grayed);
+
+      # [self.luminanceView setImage:self.luminanceImage];
+
+      # zxing::Ref<zxing::qrcode::QRCodeReader> reader(new zxing::qrcode::QRCodeReader());
+      # zxing::Ref<zxing::LuminanceSource> source(new zxing::GreyscaleLuminanceSource(data,
+      #                                                                               bytesPerRow,
+      #                                                                               height,
+      #                                                                               0,
+      #                                                                               0,
+      #                                                                               width,
+      #                                                                               height));
+
+      # zxing::Ref<zxing::Binarizer> binarizer(new zxing::HybridBinarizer(source));
+      # source = 0;
+      # zxing::Ref<zxing::BinaryBitmap> grayImage (new zxing::BinaryBitmap(binarizer));
+      # binarizer = 0;
+
+      # {
+      #     zxing::Ref<zxing::BitMatrix> matrix (grayImage->getBlackMatrix());
+
+      #     CGColorSpaceRef gray = CGColorSpaceCreateDeviceGray();
+      #     CGContextRef context = CGBitmapContextCreate (
+      #         0,
+      #         width,
+      #         height,
+      #         8,      // bits per component
+      #         bytesPerRow,
+      #         gray,
+      #         kCGImageAlphaNone);
+      #     CGColorSpaceRelease(gray);
+      
+      #     CGRect r = CGRectZero;
+      #     r.size.width = width;
+      #     r.size.height = height;
+      #     CGContextSetFillColorWithColor(context, CGColorGetConstantColor(kCGColorBlack));
+      #     CGContextFillRect(context, r);
+
+      #     r.size.width = 1;
+      #     r.size.height = 1;
+
+      #     CGContextSetFillColorWithColor(context, CGColorGetConstantColor(kCGColorWhite));
+      #     for(int y=0; y<height; y++) {
+      #         r.origin.y = height-1-y;
+      #         for(int x=0; x<width; x++) {
+      #             if (!matrix->get(x,y)) {
+      #                 r.origin.x = x;
+      #                 CGContextFillRect(context, r);
+      #             }
+      #         }
+      #     }
+
+      #     CGImageRef binary = CGBitmapContextCreateImage(context); 
+
+      #     CGContextRelease(context);
+
+      #     self.binarizedImage = [[NSImage alloc] initWithCGImage:binary size:NSZeroSize];
+      #     [self.binarizedImage release];
+
+      #     CGImageRelease(binary);
+
+      #     [self.binarizedView setImage:self.binarizedImage];
+      # }
+
+      # zxing::DecodeHints hints;
+
+      # NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+
+      # try {
+      #     zxing::Ref<zxing::Result> result(reader->decode(grayImage, hints));
+      #     zxing::Ref<zxing::String> string(result->getText());
+      #     NSLog(@"result: %s", string->getText().c_str());
+      # } catch (zxing::ReaderException const& rex) {
+      #     if (strcmp(rex.what(),"Could not find three finder patterns")) {
+      #         NSLog(@"failed to decode, caught ReaderException '%s'", rex.what());
+      #     }
+      # } catch (zxing::IllegalArgumentException const& iex) {
+      #     NSLog(@"failed to decode, caught IllegalArgumentException '%s'", iex.what());
+      # } catch (...) {
+      #     NSLog(@"Caught unknown exception");
+      # }
+
+      # [pool release];
+
+      # CGContextRelease(newContext); 
+      # CGColorSpaceRelease(colorSpace);
+
+      # delete [] data;
+    end
+
+  end
+
+  if options[:capture]
+
+
+    if options[:preview]
+    end
+
+    app = NSApplication.sharedApplication
+    app.delegate = AppDelegate.new
+
+    app.run
+
+  end
 end

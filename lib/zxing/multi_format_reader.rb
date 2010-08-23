@@ -1,12 +1,14 @@
 module ZXing; end
 
 module ZXing::MultiFormatReader
-  extend ZXing::Reader
-
   if RUBY_PLATFORM == "java"
     Class = ZXing::Java::MultiFormatReader
   else
-    Class = ZXing::FFI::MultiFormatReader
+    if defined? RUBY_ENGINE and RUBY_ENGINE == "macruby"
+      Class = ZXing::ObjC::MultiFormatReader
+    else
+      Class = ZXing::FFI::MultiFormatReader
+    end
   end
 
   def self.new *args
@@ -16,5 +18,4 @@ module ZXing::MultiFormatReader
       super
     end
   end
-
 end
