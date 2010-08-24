@@ -44,6 +44,9 @@ OptionParser.new do |o|
     o.on('--nopreview', '--no-preview') do
       options[:preview] = false
     end
+    o.on('-C', '--continuous') do
+      options[:continuous] = true
+    end
     o.on('-B', '--show-binary', '--showbinary') do
       options[:show_binary] = true
     end
