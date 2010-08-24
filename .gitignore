@@ -2,4 +2,5 @@
 /lib/zxing/Makefile
 /lib/zxing/zxing.so
 /lib/zxing/zxing.bundle
+/lib/zxing/objc/zxing.bundle
 /pkg
