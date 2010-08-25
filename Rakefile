@@ -1,7 +1,9 @@
 # -*- mode:ruby -*-
 
 java = RUBY_PLATFORM =~ /java/
-macruby = defined? RUBY_PLATFORM and RUBY_PLATFORM == "macruby"
+macruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == "macruby"
+
+require 'rubygems'
 
 gem "hoe", "~> 2.5"
 require 'hoe'
@@ -123,7 +125,12 @@ if macruby
   file "lib/zxing/objc/zxing.bundle" => "vendor/zxing/objc/build/Debug/zxing.bundle" do
     cp "vendor/zxing/objc/build/Debug/zxing.bundle", "lib/zxing/objc/zxing.bundle"
   end
-  task :compile => "lib/zxing/objc/zxing.bundle"
+  task :xcode do
+    Dir.chdir "vendor/zxing/objc" do
+      sh "xcodebuild -project osx.xcodeproj -configuration Debug"
+    end
+  end
+  task :compile => [ :xcode, "lib/zxing/objc/zxing.bundle" ]
 end
 
 if !java && !macruby
