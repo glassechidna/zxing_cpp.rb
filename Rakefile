@@ -154,8 +154,7 @@ if macruby
         cp "Zxd/lib/#{name}.dylib", "bin/Zxd.app/Contents/Resources/#{name}.dylib" 
       end
 
-      file "Zxd/lib/#{name}.dylib" => 
-        [ "Zxd/Contents/Resources" ] + rbs do
+      file "Zxd/lib/#{name}.dylib" => rbs do
         Dir.chdir "#{gem}/lib" do
           cmd = "macrubyc --dylib -o #{dest} #{Dir['**/*.rb'].join(' ')}"
           # puts cmd
