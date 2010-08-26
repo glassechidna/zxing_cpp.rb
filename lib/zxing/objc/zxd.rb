@@ -2,6 +2,15 @@ framework 'AppKit'
 framework 'QTKit'
 framework 'QuartzCore'
 framework 'CoreVideo'
+framework 'CoreServices'
+
+if false
+  file = File.expand_path(File.join(File.dirname(__FILE__), 'process.bridgesupport'))
+  load_bridge_support_file(file)
+  psn = ProcessSerialNumber.new
+  GetCurrentProcess(psn)
+  # p psn, psn.highLongOfPSN, psn.lowLongOfPSN
+end
 
 class AppDelegate
   def initialize options
@@ -26,7 +35,6 @@ class AppDelegate
     
     @window.center
 
-
     @window.setFrameAutosaveName "SomeWindow"
     @window.setFrameUsingName "SomeWindow"
 
@@ -37,10 +45,13 @@ class AppDelegate
       @window.level = NSNormalWindowLevel
       @window.delegate = self
 
-      @window.display
-      @window.orderFrontRegardless
-      @window.makeMainWindow
-      @window.makeKeyWindow
+      @menu = NSMenu.alloc.initWithTitle "ZXD"
+      NSApplication.sharedApplication.mainMenu = @menu
+
+      # @window.display
+      # @window.makeMainWindow
+      # @window.makeKeyWindow
+      # @window.orderFrontRegardless
 
       capture.layer.frame = NSWindow.contentRectForFrameRect @window.contentView.frame, styleMask:@mask
 
@@ -79,10 +90,17 @@ class AppDelegate
     frame = NSWindow.frameRectForContentRect @new_frame, styleMask:@mask
     @window.setFrame frame, display:true
     @window.setContentAspectRatio [@new_frame.size.width, @new_frame.size.height]
+    @window.orderFrontRegardless
+
+    file =
+      File.expand_path(File.join(File.dirname(__FILE__), 
+                                 *%w(.. .. .. vendor zxing zxingorg web zxing-icon.png)))
+
+    NSApplication.sharedApplication.
+      setApplicationIconImage NSImage.alloc.initByReferencingFile(file)
   end
 
   def captureSize capture, width:width, height:height
-    # p "CS", width, height
     video_ar = 1.0*width/height
     window_ar = @window.frame.size.width/@window.frame.size.height
     if (video_ar-window_ar).abs > 0.001
