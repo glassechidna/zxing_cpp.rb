@@ -140,9 +140,14 @@ if macruby
     copies = []
     libs = []
 
+    rule '.o' => '.rb' do |t|
+      sh "macrubyc -c #{t.source}"
+    end
+
     gems.each do |gem|
       name = gem.sub(%r{-.*}, "").sub(%r{.*/}, "")
       rbs = Dir["#{gem}/lib/**/*.rb"]
+      os = Dir["#{gem}/lib/**/*.rb"].map { |fn| fn.sub %r{.rb$}, ".o" }
 
       dest = File.expand_path "Zxd/lib/#{name}.dylib"
 
@@ -154,9 +159,9 @@ if macruby
         cp "Zxd/lib/#{name}.dylib", "bin/Zxd.app/Contents/Resources/#{name}.dylib" 
       end
 
-      file "Zxd/lib/#{name}.dylib" => rbs do
+      file "Zxd/lib/#{name}.dylib" => os do
         Dir.chdir "#{gem}/lib" do
-          cmd = "macrubyc --dylib -o #{dest} #{Dir['**/*.rb'].join(' ')}"
+          cmd = "macrubyc --dylib -o #{dest} #{Dir['**/*.o'].join(' ')}"
           # puts cmd
           sh cmd
         end
@@ -171,7 +176,6 @@ if macruby
         files.delete "rb_main.rb"
         locals = libs.map { |f| f.sub %r{Zxd/}, "" }
         sh "macrubyc -o ../bin/Zxd.app/Contents/MacOS/Zxd rb_main.rb "+(files+locals).join(" ")
-        rm Dir["**/*.o"]
       end
     end
     
