@@ -4,14 +4,6 @@ framework 'QuartzCore'
 framework 'CoreVideo'
 framework 'CoreServices'
 
-if false
-  file = File.expand_path(File.join(File.dirname(__FILE__), 'process.bridgesupport'))
-  load_bridge_support_file(file)
-  psn = ProcessSerialNumber.new
-  GetCurrentProcess(psn)
-  # p psn, psn.highLongOfPSN, psn.lowLongOfPSN
-end
-
 class AppDelegate
   def initialize options
     @options = options
