@@ -117,6 +117,10 @@ if java
 end
 
 if macruby
+  rule '.o' => '.rb' do |t|
+    sh "macrubyc -c #{t.source}"
+  end
+
   file "vendor/zxing/objc/build/Debug/zxing.bundle" do
     Dir.chdir "vendor/zxing/objc" do
       raise "implement"
@@ -136,13 +140,12 @@ if macruby
     directory "bin/Zxd.app/Contents/MacOS" 
     directory "bin/Zxd.app/Contents/Resources"
 
+    namespace :zxing do
+    end
+
     gems = Dir["Zxd/vendor/gems/*"]
     copies = []
     libs = []
-
-    rule '.o' => '.rb' do |t|
-      sh "macrubyc -c #{t.source}"
-    end
 
     gems.each do |gem|
       name = gem.sub(%r{-.*}, "").sub(%r{.*/}, "")
@@ -169,7 +172,7 @@ if macruby
     end
 
     file "bin/Zxd.app/Contents/MacOS/Zxd" => 
-      [ "bin/Zxd.app/Contents/MacOS" ] + Dir["Zxd/**/*.rb"] + libs + copies do
+      [ "bin/Zxd.app/Contents/MacOS" ] + Dir["Zxd/**/*.rb"] + libs + copies ] do
       Dir.chdir "Zxd" do
         files = Dir["**/*.rb"]
         files.reject! { |name| name =~ %r{^vendor/gems/} }
