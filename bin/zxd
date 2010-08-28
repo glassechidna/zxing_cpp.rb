@@ -108,6 +108,8 @@ ARGV.each_with_index do |uri,i|
       puts result.text
     rescue ZXing::ReaderException => re
       raise re if !html
+    rescue ZXing::NotFoundException => nfe
+      raise nfe if !html
     end
   end
 end
