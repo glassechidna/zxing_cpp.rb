@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
+
 require 'rubygems'
+require 'uri'
+require 'open-uri'
 
 # DONT COMMIT
 $:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
@@ -63,8 +66,23 @@ if !options[:qr]
   reader = MultiFormatReader.new
 end
 
-ARGV.each do |filename|
-  image = Image.read filename
+html = false
+
+ARGV.each_with_index do |uri,i|
+  open(uri) do |file|
+    if file.content_type == "text/html"
+      html = true
+      require 'hpricot'
+      doc = Hpricot.parse file
+      (doc/"img[@src]").each do |img|
+        ARGV.insert(i+1, (URI.parse(uri)+URI.parse(img[:src])).to_s)
+      end
+      uri = nil
+    end
+  end
+  next if uri.nil?
+
+  image = Image.read uri
   rotated = image.rotate options[:rotation].to_f
   source = LuminanceSource.new rotated
   if options[:luminance]
@@ -85,10 +103,13 @@ ARGV.each do |filename|
     end
     result = QRCode::Decoder.new.decode result
   else
-    result = reader.decode bitmap, options[:th] ? { :try_harder => true } : nil
+    begin
+      result = reader.decode bitmap, options[:th] ? { :try_harder => true } : nil
+      puts result.text
+    rescue ZXing::ReaderException => re
+      raise re if !html
+    end
   end
-
-  puts result.text
 end
 
 if macruby && (options[:capture] || options[:preview])
