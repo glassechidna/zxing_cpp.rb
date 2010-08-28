@@ -135,60 +135,6 @@ if macruby
     end
   end
   task :compile => [ :xcode, "lib/zxing/objc/zxing.bundle" ]
-
-  namespace :zxd do
-    directory "bin/Zxd.app/Contents/MacOS" 
-    directory "bin/Zxd.app/Contents/Resources"
-
-    namespace :zxing do
-    end
-
-    gems = Dir["Zxd/vendor/gems/*"]
-    copies = []
-    libs = []
-
-    gems.each do |gem|
-      name = gem.sub(%r{-.*}, "").sub(%r{.*/}, "")
-      rbs = Dir["#{gem}/lib/**/*.rb"]
-      os = Dir["#{gem}/lib/**/*.rb"].map { |fn| fn.sub %r{.rb$}, ".o" }
-
-      dest = File.expand_path "Zxd/lib/#{name}.dylib"
-
-      libs << "Zxd/lib/#{name}.dylib"
-      copies << "bin/Zxd.app/Contents/Resources/#{name}.dylib"
-
-      file "bin/Zxd.app/Contents/Resources/#{name}.dylib" => 
-        [ "Zxd/lib/#{name}.dylib", "bin/Zxd.app/Contents/Resources" ] do
-        cp "Zxd/lib/#{name}.dylib", "bin/Zxd.app/Contents/Resources/#{name}.dylib" 
-      end
-
-      file "Zxd/lib/#{name}.dylib" => os do
-        Dir.chdir "#{gem}/lib" do
-          cmd = "macrubyc --dylib -o #{dest} #{Dir['**/*.o'].join(' ')}"
-          # puts cmd
-          sh cmd
-        end
-      end
-    end
-
-    file "bin/Zxd.app/Contents/MacOS/Zxd" => 
-      [ "bin/Zxd.app/Contents/MacOS" ] + Dir["Zxd/**/*.rb"] + libs + copies ] do
-      Dir.chdir "Zxd" do
-        files = Dir["**/*.rb"]
-        files.reject! { |name| name =~ %r{^vendor/gems/} }
-        files.delete "rb_main.rb"
-        locals = libs.map { |f| f.sub %r{Zxd/}, "" }
-        sh "macrubyc -o ../bin/Zxd.app/Contents/MacOS/Zxd rb_main.rb "+(files+locals).join(" ")
-      end
-    end
-    
-    task :app => [ "bin/Zxd.app/Contents/MacOS/Zxd"
-                 ] do
-    end
-  
-  end
-
-  task :compile => :"zxd:app"
 end
 
 if !java && !macruby
