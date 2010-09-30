@@ -10,7 +10,11 @@ class ZXing::FFI::Result
   end
 
   def text
-    ZXing::FFI::Library.String_string ZXing::FFI::Library::StringPointer.new(ZXing::FFI::Library.Result_getText(@native))
+    s = ZXing::FFI::Library.String_string ZXing::FFI::Library::StringPointer.new(ZXing::FFI::Library.Result_getText(@native))
+    if RUBY_VERSION =~ /^1.9/
+      s.force_encoding("UTF-8")
+    end
+    s
   end
 
   def metadata

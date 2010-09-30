@@ -3,8 +3,10 @@
 
 $:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
 
-$KCODE = "UTF8"
-require 'jcode'
+if RUBY_VERSION =~ /^1.8/
+  $KCODE = "UTF8"
+  require 'jcode'
+end
 
 require 'rubygems'
 require 'zxing'
