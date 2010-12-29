@@ -69,18 +69,20 @@ end
 html = false
 
 ARGV.each_with_index do |uri,i|
-  open(uri) do |file|
-    if file.content_type == "text/html"
-      html = true
-      require 'hpricot'
-      doc = Hpricot.parse file
-      (doc/"img[@src]").each do |img|
-        ARGV.insert(i+1, (URI.parse(uri)+URI.parse(img[:src])).to_s)
+  begin
+    open(uri) do |file|
+      if file.content_type == "text/html"
+        html = true
+        require 'hpricot'
+        doc = Hpricot.parse file
+        (doc/"img[@src]").each do |img|
+          ARGV.insert(i+1, (URI.parse(uri)+URI.parse(img[:src])).to_s)
+        end
+        uri = nil
       end
-      uri = nil
     end
-  end
-  next if uri.nil?
+    next if uri.nil?
+  rescue; end
 
   image = Image.read uri
   rotated = image.rotate options[:rotation].to_f
