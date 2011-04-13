@@ -138,7 +138,8 @@ if macruby
 end
 
 if !java && !macruby
-  file "vendor/zxing/cpp/build/libzxing.a" do
+  file "vendor/zxing/cpp/build/libzxing.a" =>
+    Dir["vendor/zxing/cpp/core/src/**/*.{h,cpp}"] do
     Dir.chdir "vendor/zxing/cpp" do
       sh "python scons/scons.py PIC=yes lib"
     end
