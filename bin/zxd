@@ -28,7 +28,7 @@ OptionParser.new do |o|
   o.on('-b', '--binary binary_file') do |b|
     options[:binary] = b
   end
-  o.on('-a', '--ascii ascii_file') do |b|
+  o.on('-a', '--ascii ascii_file') do |a|
     options[:ascii] = a
   end
   o.on('-t', '--tryharder') do |th|
