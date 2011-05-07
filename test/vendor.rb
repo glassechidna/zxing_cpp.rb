@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 $:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
 
@@ -68,7 +68,7 @@ Dir["vendor/zxing/core/test/**/*BlackBox*java"].each do |driver|
       harder = match[2].to_i
     end
     rotation = match[3].to_f
-    tests.push [ normal, harder, rotation ]
+    tests.push [normal, harder, rotation]
   end
   
   $drivers[driver] = {
@@ -136,7 +136,7 @@ end
   passed = []
   tried_harder = []
 
-  driver[:images].each do |filename|
+  driver[:images].sort.each do |filename|
     puts "Starting #{filename}"
 
     image = Image.read filename
@@ -196,7 +196,12 @@ end
 
         # this is a hack, but the expected text assumes the SJIS 0x5c is \ but iconv (correctly?) converts
         # it to ¥
-        result_text.gsub!(/¥/, '\\')
+
+        
+        # not sure about this ...
+        if RUBY_VERSION =~ /^1.8/
+          result_text.gsub!(/¥/, '\\')
+        end
 
         if !driver[:negative] and expected_text != result_text
           puts "Mismatch: expected '#{expected_text}' but got '#{result_text}' #{suffix}"
