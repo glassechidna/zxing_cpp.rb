@@ -13,13 +13,13 @@ other areas), they're welcome.
 I tried to make the interface compatible with the ecin's zxing gem but
 I'm not sure how complete that is right now. I don't use it, so ...
 
-= ZXing.rb
+= zxing.rb
 
 * http://github.com/smparkes/zxing.rb
 
 == DESCRIPTION:
 
-ZXing.rb is a Ruby interface to the ZXing barcode library.
+zxing.rb is a Ruby interface to the ZXing barcode library.
 
 == FEATURES:
 
