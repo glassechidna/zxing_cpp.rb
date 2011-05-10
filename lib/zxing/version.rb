@@ -3,7 +3,6 @@ module ZXing
 
   VERSION_INFO = {}
   VERSION_INFO['warnings']              = []
-  VERSION_INFO['nokogiri']              = Nokogiri::VERSION
   VERSION_INFO['ruby']                  = {}
   VERSION_INFO['ruby']['version']       = ::RUBY_VERSION
   VERSION_INFO['ruby']['platform']      = ::RUBY_PLATFORM

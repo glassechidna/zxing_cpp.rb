@@ -1,3 +1,18 @@
+= THIS IS A REAL WORK IN PROGRESS
+
+I use this stuff on a regular basis to test zxing but I haven't had
+time to cleanup all the gem stuff in order to install it as a gem,
+particularly with all the various VM stuff and dynamic linking. For
+example, it currently uses scons to build the C++
+directory. Translating that to ruby so as not not to require python
+would be nice but seems tricky, at least for me.
+
+If you have the time to contribute improvements in any of these (or
+other areas), they're welcome.
+
+I tried to make the interface compatible with the ecin's zxing gem but
+I'm not sure how complete that is right now. I don't use it, so ...
+
 = ZXing.rb
 
 * http://github.com/smparkes/zxing.rb
@@ -9,7 +24,10 @@ ZXing.rb is a Ruby interface to the ZXing barcode library.
 == FEATURES:
 
 * Supports ZXing Java under jruby
-* Supports ZXing C++ under ruby 1.8 (and maybe 1.9?)
+* Supports ZXing C++ under ruby 1.8 and 1.9
+
+I've played with MacRuby but it was a while ago and I don't think I
+ever integrated that support with this (proto)gem.
 
 == SUPPORT:
 
@@ -34,6 +52,9 @@ zxing.rb provides access to many of the classes of ZXing classes like
 readers, luminance sources, binarizers, so you can mix and match your
 own applications much as you would with a native Java or C++ app. See
 +zxd+ and +test/vendor.rb+ for examples.
+
+There is a proto-encoder (zxe) but I don't think it's hooked up. I
+thought it was at some point, but ...
 
 === Using the ZXing module
 
@@ -84,30 +105,32 @@ own applications much as you would with a native Java or C++ app. See
 
 == REQUIREMENTS:
 
-* Ruby 1.8 (maybe 1.9) or jruby (tested on 1.5)
+* Ruby 1.8, 1.9, or jruby
 * rmagick on ruby 1.8/1.9
 
 zxing.rb bundles a version of zxing.
 
 == INSTALL:
 
-  gem install zxing
+The gem packaging is incomplete. For now, you need to clone the repo,
+get zxing as a submodule (git submodule update --init) and then you
+can build and run the tests.
 
 == DEVELOPMENT:
 
   rake test && rake zxing:test
 
-<tt>rake test</tt> runs the zxing.rb unit tests. <tt>rake zxing:test</tt> runs the
-standard ZXing blackbox tests. You can give <tt>rake zxing:test</tt> a
-parameter to only run matching tests (based on file globing). For
-example, <tt>rake zxing:test[qrcode-2/1]</tt> will run the qrcode tests in
-set 2 that start with 1 (1, 10, 11, etc.)
+<tt>rake test</tt> runs the zxing.rb unit tests. <tt>rake
+zxing:test</tt> runs the standard ZXing blackbox tests. You can give
+<tt>rake zxing:test</tt> a parameter to only run matching tests (based
+on file globing). For example, <tt>rake zxing:test[qrcode-2/1]</tt>
+will run the qrcode tests in set 2 that start with 1 (1, 10, 11, etc.)
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2010 {Ecin Krispie}[http://github.com/ecin], {Steven Parkes}[http://github.com/smparkes]
+Copyright (c) 2011 {Steven Parkes}[http://github.com/smparkes]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

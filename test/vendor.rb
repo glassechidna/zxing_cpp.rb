@@ -140,7 +140,12 @@ end
     puts "Starting #{filename}"
 
     image = Image.read filename
-    expected_text = IO.read filename.sub(%r{\.[^.]+$}, ".txt") if !driver[:negative]
+    if !driver[:negative]    
+      expected_text = IO.read filename.sub(%r{\.[^.]+$}, ".txt")
+      if RUBY_VERSION !~ /^1.8/
+        expected_text.force_encoding "UTF-8"
+      end
+    end
 
     expected_metadata = {}
     Dir[filename.sub(%r{\.[^.]+$}, ".metadata.txt")].each do |metafile|

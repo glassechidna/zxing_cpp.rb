@@ -1,43 +1,26 @@
-# -*- mode:ruby -*-
+# -*- ruby -*-
+
+require 'rake/clean'
 
 java = RUBY_PLATFORM =~ /java/
 macruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == "macruby"
 
 require 'rubygems'
 
-gem "hoe", "~> 2.5"
-require 'hoe'
-
-Hoe.plugin :debugging, :doofus, :git
-Hoe.plugins.delete :rubyforge
-
-HOE = Hoe.spec 'zxing' do
-  developer "Steven Parkes", "smparkes@smparkes.net"
-
-  self.extra_rdoc_files         = FileList["*.rdoc"]
-  self.history_file             = "CHANGELOG.rdoc"
-  self.readme_file              = "README.rdoc"
-
-  self.spec_extras[:extensions] = %w(Rakefile)
-
-  extra_dev_deps << [ "shoulda", ">=0" ]
-
-  if java
-    clean_globs << "vendor/zxing/core/core.jar"
-    clean_globs << "vendor/zxing/javase/javase.jar"
-  else
-    clean_globs << "**/*.a"
-    clean_globs << "**/*.so"
-    clean_globs << "**/*.bundle"
-    clean_globs << "**/*.dylib"
-    clean_globs << "**/*.pyc"
-    clean_globs << "lib/zxing/Makefile"
-    clean_globs << "lib/zxing/zxing.o"
-    clean_globs << "**/.sconsign.dblite"
-  end
-  clean_globs << "**/build"
-
+if java
+  CLEAN.concat Dir["vendor/zxing/core/core.jar"]
+  CLEAN.concat Dir["vendor/zxing/javase/javase.jar"]
+else
+  CLEAN.concat Dir["**/*.a"]
+  CLEAN.concat Dir["**/*.so"]
+  CLEAN.concat Dir["**/*.bundle"]
+  CLEAN.concat Dir["**/*.dylib"]
+  CLEAN.concat Dir["**/*.pyc"]
+  CLEAN.concat Dir["lib/zxing/Makefile"]
+  CLEAN.concat Dir["lib/zxing/zxing.o"]
+  CLEAN.concat Dir["**/.sconsign.dblite"]
 end
+CLEAN.concat Dir["**/build"]
 
 shared_ext = ".so"
 Dir["lib/zxing/zxing.*"].each do |file|
@@ -53,9 +36,6 @@ file "vendor/zxing" do
 end
 
 task :compile => "vendor/zxing"
-
-Hoe.plugin :debugging, :doofus, :git
-Hoe.plugins.delete :rubyforge
 
 task :clean do
   if File.exist? "vendor/zxing/cpp/build" 
