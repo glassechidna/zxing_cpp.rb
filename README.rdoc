@@ -116,6 +116,16 @@ The gem packaging is incomplete. For now, you need to clone the repo,
 get zxing as a submodule (git submodule update --init) and then you
 can build and run the tests.
 
+On Mac OS X, you may run into a issue when you run the build:
+
+  ld: warning: ignoring file zxing.o, file was built for unsupported file format which is not the architecture being linked (i386)
+  ld: warning: ignoring file [path]/zxing.rb/vendor/zxing/cpp/build/libzxing.a, file was built for archive which is not the architecture being linked (i386)
+
+To get a successful build in this case, invoke rake setting the ARCHFLAGS environment variable:
+
+  rake clean
+  ARCHFLAGS="-arch x86_64" rake
+
 == DEVELOPMENT:
 
   rake test && rake zxing:test
