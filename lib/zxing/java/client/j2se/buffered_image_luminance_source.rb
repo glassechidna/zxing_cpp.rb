@@ -19,11 +19,12 @@ class ZXing::Java::Client::J2SE::BufferedImageLuminanceSource <
   def image
     image = java::awt::image::BufferedImage.new width, height, java::awt::image::BufferedImage::TYPE_BYTE_GRAY
     matrix = self.matrix
-    (0...height).each do |y| 
-      (0...width).each do |x| 
-        image.setRGB x, y, matrix[y*width + x]
-      end
-    end
+    raster = image.getRaster
+    array = Java::int[matrix.length].new
+    matrix.each_with_index {|v, i|
+      array[i] = v
+    }
+    raster.setPixels 0, 0, width, height, array
     ZXing::Java::Image.new image
   end
 end

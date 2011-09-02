@@ -21,6 +21,11 @@ class ZXing::FFI::Common::GreyscaleLuminanceSource < ZXing::FFI::LuminanceSource
                                                            height)
   end
   def image
-    Magick::Image.constitute width, height, "I", matrix.get_array_of_char(0, width*height)
+    Magick::Image.constitute(width,
+                             height, 
+                             "I",
+                             matrix.get_array_of_char(0, width*height).map{|v|
+                               v << 8
+                             })
   end
 end
