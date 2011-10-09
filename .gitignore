@@ -5,3 +5,5 @@
 /lib/zxing/objc/zxing.bundle
 /pkg
 /Gemfile.lock
+/*.png
+/*.jpg
