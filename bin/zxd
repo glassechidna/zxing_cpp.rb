@@ -100,9 +100,6 @@ ARGV.each_with_index do |uri,i|
   if options[:qr]
     detector = QRCode::Detector.new bitmap.black_matrix
     result = detector.detect
-    if options[:ascii]
-      raise "hell"
-    end
     result = QRCode::Decoder.new.decode result
   else
     begin
