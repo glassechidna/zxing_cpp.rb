@@ -127,6 +127,7 @@ end
 
   case driver[:reader]
   when "DataMatrixReader"; reader = ZXing::DataMatrix::DataMatrixReader
+  when "AztecReader"; reader = ZXing::Aztec::AztecReader
   when "Code39Reader"; reader = ZXing::OneD::Code39Reader
   else; reader = ZXing.const_get(driver[:reader])
   end

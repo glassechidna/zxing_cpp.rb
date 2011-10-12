@@ -16,6 +16,7 @@ module ZXing::Java
   autoload :Common, 'zxing/java/common'
   autoload :OneD, 'zxing/java/oned'
   autoload :DataMatrix, 'zxing/java/datamatrix'
+  autoload :Aztec, 'zxing/java/aztec'
   autoload :Client, 'zxing/java/client'
   autoload :QRCode, 'zxing/java/qrcode'
 end

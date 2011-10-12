@@ -28,6 +28,7 @@ module ZXing
   autoload :Common, 'zxing/common'
   autoload :PDF417, 'zxing/pdf417'
   autoload :QRCode, 'zxing/qrcode'
+  autoload :Aztec, 'zxing/aztec'
 
   if !defined? RUBY_ENGINE or RUBY_ENGINE != "macruby"
     def decode *args
