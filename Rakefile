@@ -59,9 +59,10 @@ end
 
 zxing = "vendor/zxing"
 
-subdirs = [ :qrcode, :datamatrix, :negative, :oned, :aztec ]
+subdirs = [ :qrcode, :datamatrix, :negative, :oned ]
 if java
   subdirs << :pdf417
+  subdirs << :aztec
 end
 
 if java

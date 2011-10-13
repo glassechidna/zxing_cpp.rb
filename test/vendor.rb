@@ -205,7 +205,7 @@ end
 
         
         # not sure about this ...
-        if RUBY_VERSION =~ /^1.8/
+        if RUBY_VERSION =~ /^1.[89]/
           result_text.gsub!(/¥/, '\\')
         end
 
