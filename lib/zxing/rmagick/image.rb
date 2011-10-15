@@ -38,19 +38,18 @@ class ZXing::RMagick::Image
     end
 
     if false
-      gs = img.quantize(256, Magick::GRAYColorspace)
-      (0..0).each do |j|
-        (0..25).each do |i|
+      (8..8).each do |j|
+        (8..8).each do |i|
           p i,j
           pixel = img.pixel_color(i,j)
           r = pixel.red&0xff
           g = pixel.green&0xff
           b = pixel.blue&0xff
-          puts '%x'%r, '%x'%g, '%x'%b
-          pixel = gs.pixel_color(i,j)
-          puts(pixel.red&0xff)
-          puts((306 * (r) + 601 * (g) + 117 * (b)) >> 10)
-          puts
+          p ['%x'%r, '%x'%g, '%x'%b]
+          p [r, g, b]
+          p ((306 * (r) + 601 * (g) + 117 * (b) + (1 << 9)) >> 10)
+          p img.export_pixels_to_str(i, j, 1, 1, "I").ord
+          p "x"
         end
       end
     end
