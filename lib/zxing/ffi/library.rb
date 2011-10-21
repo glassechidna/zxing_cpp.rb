@@ -43,6 +43,7 @@ module ZXing::FFI::Library
   attach_function 'DecodeHints_new', [:int], :pointer
   attach_function 'DecodeHints_delete', [:pointer], :void
   attach_function 'DecodeHints_setTryHarder', [:pointer, :bool], :void
+  attach_function 'DecodeHints_setDataMatrix', [:pointer, :bool], :void
   attach_function 'Result_delete', [:pointer], :void
   attach_function 'Result_getBarcodeFormat', [:pointer], :int
   attach_function 'Result_getText', [:pointer], :pointer

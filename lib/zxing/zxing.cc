@@ -36,7 +36,8 @@ extern "C" {
     void* bitmap_ref_ptr,
     void* hints_ptr) {
 
-    zxing::Ref<zxing::Reader>* reader = (zxing::Ref<zxing::Reader>*)reader_ref_ptr;
+    zxing::Ref<zxing::Reader>* reader =
+      (zxing::Ref<zxing::Reader>*)reader_ref_ptr;
     zxing::Ref<zxing::BinaryBitmap>* bitmap = 
       (zxing::Ref<zxing::BinaryBitmap>*)bitmap_ref_ptr;
     zxing::DecodeHints* hints = (zxing::DecodeHints*)hints_ptr;
@@ -164,6 +165,11 @@ extern "C" {
   void DecodeHints_setTryHarder(void* hints_ptr, bool value) {
     zxing::DecodeHints* hints  = (zxing::DecodeHints*)hints_ptr;
     hints->setTryHarder(value);
+  }
+
+  void DecodeHints_setDataMatrix(void* hints_ptr, bool) {
+    zxing::DecodeHints* hints  = (zxing::DecodeHints*)hints_ptr;
+    hints->addFormat(zxing::BarcodeFormat_DATA_MATRIX);
   }
 
   void Result_delete(void* result_ptr) {

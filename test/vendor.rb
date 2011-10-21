@@ -177,6 +177,9 @@ end
           if driver[:format] == "PDF417"
             hints[:possible_formats] = [:PDF417]
           end
+          if driver[:format] == "DATA_MATRIX"
+            hints[:possible_formats] = [:DATA_MATRIX]
+          end
           result = reader.decode bitmap, hints
         rescue NotFoundException => re
           puts re.message + suffix

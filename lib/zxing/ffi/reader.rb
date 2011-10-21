@@ -15,6 +15,16 @@ class ZXing::FFI::Reader
       case k
       when :try_harder
         ZXing::FFI::Library.DecodeHints_setTryHarder native_hints, v
+      when :possible_formats
+        v.each do |format|
+          case format 
+          when :DATA_MATRIX
+            ZXing::FFI::Library.
+              DecodeHints_setDataMatrix native_hints, true
+          else
+            raise "implement hint for #{format}"
+          end
+        end
       else
         raise "implement #{k} #{v}"
       end
