@@ -1,7 +1,7 @@
 module ZXing; end
 module ZXing::FFI; end
 
-require 'iconv'
+# require 'iconv'
 require 'ffi'
 
 module ZXing::FFI::Library
