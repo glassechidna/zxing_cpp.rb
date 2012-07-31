@@ -37,6 +37,7 @@ class ZXing::RMagick::Image
       raise ZXing::BadImageException.new e.message
     end
 
+    img.colorspace = Magick::RGBColorspace
     if false
       (8..8).each do |j|
         (8..8).each do |i|
