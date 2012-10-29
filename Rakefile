@@ -138,7 +138,7 @@ if !java && !macruby
   end
   task :recompile do
     file("vendor/zxing/cpp/build/libzxing.a").execute
-    rm "lib/zxing/zxing#{shared_ext}"
+    rm_f "lib/zxing/zxing#{shared_ext}"
     file("lib/zxing/zxing#{shared_ext}").execute
   end
   task :compile => "lib/zxing/zxing#{shared_ext}"
