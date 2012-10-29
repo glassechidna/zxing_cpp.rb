@@ -1,3 +1,3 @@
 [submodule "vendor/zxing"]
 	path = vendor/zxing
-	url = git://github.com/smparkes/zxing.git
+	url = git://github.com/zxing/zxing.git
