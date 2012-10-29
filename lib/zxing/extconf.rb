@@ -12,6 +12,9 @@ lib = File.expand_path File.join(*lib)
 lib = Dir[lib+"/libzxing.a"][0]
 
 $CFLAGS = %(-I#{cpp_include})
-$DLDFLAGS = %(-lstdc++ #{lib} -liconv)
+$DLDFLAGS = %(-lstdc++ #{lib})
+if Dir["/usr/lib/libiconv.*"].size > 0
+  $DLDFLAGS << %( -liconv)
+end
 
 create_makefile 'zxing'
