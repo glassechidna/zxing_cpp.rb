@@ -190,6 +190,9 @@ end
         rescue FormatException => fe
           puts fe.message + suffix
           return false
+        rescue IllegalArgumentException => iae
+          puts iae.message + suffix
+          return false
         rescue ChecksumException => ce
           puts ce.message + suffix
           return false

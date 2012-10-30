@@ -3,6 +3,7 @@
 #include <zxing/Reader.h>
 #include <zxing/MultiFormatReader.h>
 #include <zxing/datamatrix/DataMatrixReader.h>
+#include <zxing/aztec/AztecReader.h>
 #include <zxing/oned/Code39Reader.h>
 #include <zxing/common/GreyscaleLuminanceSource.h>
 #include <zxing/common/HybridBinarizer.h>
@@ -64,6 +65,11 @@ extern "C" {
 
   void* DataMatrixReader_new() {
     zxing::datamatrix::DataMatrixReader* reader = new zxing::datamatrix::DataMatrixReader();
+    return new zxing::Ref<zxing::Reader>(reader);
+  }
+
+  void* AztecReader_new() {
+    zxing::aztec::AztecReader* reader = new zxing::aztec::AztecReader();
     return new zxing::Ref<zxing::Reader>(reader);
   }
 

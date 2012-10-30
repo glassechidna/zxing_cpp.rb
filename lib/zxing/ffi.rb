@@ -13,5 +13,6 @@ module ZXing::FFI
   autoload :Common, 'zxing/ffi/common'
   autoload :OneD, 'zxing/ffi/oned'
   autoload :DataMatrix, 'zxing/ffi/datamatrix'
+  autoload :Aztec, 'zxing/ffi/aztec'
   autoload :QRCode, 'zxing/ffi/qrcode'
 end

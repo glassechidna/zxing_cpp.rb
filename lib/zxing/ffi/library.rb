@@ -19,6 +19,7 @@ module ZXing::FFI::Library
                                     :pointer], :pointer
   attach_function 'MultiFormatReader_new', [], :pointer
   attach_function 'DataMatrixReader_new', [], :pointer
+  attach_function 'AztecReader_new', [], :pointer
   attach_function 'Code39Reader_new', [:bool, :bool], :pointer
   attach_function 'LuminanceSource_delete', [:pointer], :void
   attach_function 'LuminanceSource_width', [:pointer], :int
