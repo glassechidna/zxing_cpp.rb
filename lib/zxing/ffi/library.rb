@@ -41,6 +41,7 @@ module ZXing::FFI::Library
   attach_function 'BinaryBitmap_delete', [:pointer], :void
   attach_function 'BinaryBitmap_black_matrix', [:pointer], :pointer
   attach_function 'DecodeHints_new', [:int], :pointer
+  attach_function 'DecodeHints_default', [], :pointer
   attach_function 'DecodeHints_delete', [:pointer], :void
   attach_function 'DecodeHints_setTryHarder', [:pointer, :bool], :void
   attach_function 'DecodeHints_setDataMatrix', [:pointer, :bool], :void

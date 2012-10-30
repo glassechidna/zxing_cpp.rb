@@ -19,6 +19,7 @@ class ZXing::Java::Reader
         vector = java::util::Vector.new
         v.each do |value|
           vector.add case value
+                     when :DATA_MATRIX; Java::com::google::zxing::BarcodeFormat::DATA_MATRIX
                      when :PDF417; Java::com::google::zxing::BarcodeFormat::PDF417
                      else; raise "#{value} format needs implementation"
                      end

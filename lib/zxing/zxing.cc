@@ -157,6 +157,10 @@ extern "C" {
     return new zxing::DecodeHints(value);
   }
 
+  void* DecodeHints_default() {
+    return new zxing::DecodeHints(zxing::DecodeHints::DEFAULT_HINT);
+  }
+
   void DecodeHints_delete(void* hints_ptr) {
     zxing::DecodeHints* hints  = (zxing::DecodeHints*)hints_ptr;
     delete hints;

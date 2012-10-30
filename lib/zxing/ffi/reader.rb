@@ -8,25 +8,30 @@ class ZXing::FFI::Reader
   end
 
   def decode bitmap, hints = nil
-    hints ||= {}
-    native_hints = ZXing::FFI::Library::
-      DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_new(0))
-    hints.each do |k, v|
-      case k
-      when :try_harder
-        ZXing::FFI::Library.DecodeHints_setTryHarder native_hints, v
-      when :possible_formats
-        v.each do |format|
-          case format 
-          when :DATA_MATRIX
-            ZXing::FFI::Library.
-              DecodeHints_setDataMatrix native_hints, true
-          else
-            raise "implement hint for #{format}"
+    native_hints = nil
+    if hints.nil?
+      native_hints = ZXing::FFI::Library::
+        DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_default())
+    else
+      native_hints = ZXing::FFI::Library::
+        DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_new(0))
+      hints.each do |k, v|
+        case k
+        when :try_harder
+          ZXing::FFI::Library.DecodeHints_setTryHarder native_hints, v
+        when :possible_formats
+          v.each do |format|
+            case format 
+            when :DATA_MATRIX
+              ZXing::FFI::Library.
+                DecodeHints_setDataMatrix native_hints, true
+            else
+              raise "implement hint for #{format}"
+            end
           end
+        else
+          raise "implement #{k} #{v}"
         end
-      else
-        raise "implement #{k} #{v}"
       end
     end
     # p @native, bitmap.native, native_hints

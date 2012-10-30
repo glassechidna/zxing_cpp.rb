@@ -86,7 +86,7 @@ if java
 
   namespace :compile do
     task :core do
-      sh "ant -f #{zxing}/core/build.xml compile && cp #{zxing}/core/core.jar lib/zxing/core.jar"
+      sh "ant -f #{zxing}/core/build.xml build && cp #{zxing}/core/core.jar lib/zxing/core.jar"
     end
     task :javase do
       sh "ant -f #{zxing}/javase/build.xml build && cp #{zxing}/javase/javase.jar lib/zxing/javase.jar"
