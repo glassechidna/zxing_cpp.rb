@@ -59,11 +59,10 @@ end
 
 zxing = "vendor/zxing"
 
-subdirs = [ :qrcode, :datamatrix, :aztec, :negative, :oned ]
-if java
-  subdirs << :pdf417
-end
-
+subdirs = []
+subdirs += [:aztec, :datamatrix, :negative, :oned ]
+subdirs += [:rss, :"rss/expanded", :pdf417] if java
+subdirs += [:qrcode]
 if java
   if File.exists? "#{zxing}/core"
     file "#{zxing}/core/core.jar" do
@@ -92,7 +91,10 @@ if java
     end
   end
 
+  desc "compile zxing if jars don't exist"
   task :compile => [ "lib/zxing/core.jar", "lib/zxing/javase.jar" ]
+
+  desc "force jar recreation"
   task :recompile => [ "compile:core", "compile:javase" ]
 end
 
@@ -114,6 +116,7 @@ if macruby
       sh "xcodebuild -project osx.xcodeproj -configuration Debug"
     end
   end
+  desc "compile zxing module"
   task :compile => [ :xcode, "lib/zxing/objc/zxing.bundle" ]
 end
 
@@ -140,6 +143,7 @@ if !java && !macruby
     rm_f "lib/zxing/zxing#{shared_ext}"
     file("lib/zxing/zxing#{shared_ext}").execute
   end
+  desc "compile zxing shared library"
   task :compile => "lib/zxing/zxing#{shared_ext}"
 end
 
@@ -152,8 +156,9 @@ namespace :zxing do
           args = [
                   # "ruby", "-Ilib",
                   "test/vendor.rb" ] +
-            Dir["**/#{subdir}/*BlackBox*TestCase.java"]
+            Dir["vendor/zxing/**/#{subdir}/*BlackBox*TestCase.java"]
           args.unshift "valgrind" if ENV["valgrind"]
+          args.unshift "env", "EXPLICIT_LUMINANCE_CONVERSION=true"
           sh args.join(" ")
         end
       end
@@ -166,8 +171,9 @@ namespace :zxing do
   desc "run all the zxing tests (optionally, only those maching [pattern])"
   task :test, [ :pattern ] => :compile do |t, args|
     if args[:pattern]
-      args = [ "ruby", "-Ilib", "test/vendor.rb", args[:pattern] ]
+      args = ["ruby", "-Ilib", "test/vendor.rb", args[:pattern]]
       args.unshift "valgrind" if ENV["valgrind"]
+      args.unshift "env", "EXPLICIT_LUMINANCE_CONVERSION=true"
       sh args.join(" ")
     else
       subdirs.each { |subdir| task("zxing:test:#{subdir}:run").execute }
