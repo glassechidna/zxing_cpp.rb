@@ -3,8 +3,7 @@ module ZXing::FFI; end
 
 class ZXing::FFI::Common::GreyscaleLuminanceSource < ZXing::FFI::LuminanceSource
   def initialize image, left = nil, top = nil, width = nil, height = nil
-    # need to hold on to the data for the C++ class
-    @data = data = image.gray
+    data = image.gray
     data_width = image.width
     data_height = image.height
     left == nil && left = 0

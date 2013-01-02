@@ -8,8 +8,11 @@ class ZXing::FFI::Reader
   end
 
   def decode bitmap, hints = nil
+    hints ||= {}
+    th = hints[:try_harder]
+    hints.delete :try_harder
     native_hints = nil
-    if hints.nil?
+    if hints.empty?
       native_hints = ZXing::FFI::Library::
         DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_default())
     else
@@ -17,8 +20,6 @@ class ZXing::FFI::Reader
         DecodeHintsPointer.new(ZXing::FFI::Library.DecodeHints_new(0))
       hints.each do |k, v|
         case k
-        when :try_harder
-          ZXing::FFI::Library.DecodeHints_setTryHarder native_hints, v
         when :possible_formats
           v.each do |format|
             case format 
@@ -33,6 +34,9 @@ class ZXing::FFI::Reader
           raise "implement #{k} #{v}"
         end
       end
+    end
+    if th
+      ZXing::FFI::Library.DecodeHints_setTryHarder native_hints, th
     end
     # p @native, bitmap.native, native_hints
     ptr = ZXing::FFI::Library.Reader_decode @native, bitmap.native, native_hints

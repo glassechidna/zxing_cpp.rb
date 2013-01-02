@@ -54,6 +54,8 @@ extern "C" {
       result = new_exception_data("zxing::ReaderException", e);
     } catch(zxing::Exception const& e) {
       result = new_exception_data("zxing::Exception", e);
+    } catch(...) {
+      result = new_exception_data("...", std::exception());
     }
     return result;
   }
@@ -96,11 +98,11 @@ extern "C" {
 
   void* LuminanceSource_matrix(void* source_ptr) {
     zxing::Ref<zxing::LuminanceSource>* ref = (zxing::Ref<zxing::LuminanceSource>*)source_ptr;
-    return (*ref)->getMatrix();
+    return &(*ref)->getMatrix()[0];
   }
 
   void* GreyscaleLuminanceSource_new(
-    unsigned char* greyData,
+    char* greyData,
     int dataWidth,
     int dataHeight,
     int left,
@@ -109,7 +111,7 @@ extern "C" {
     int height) {
     zxing::GreyscaleLuminanceSource* source =
       new zxing::GreyscaleLuminanceSource(
-        greyData,
+        zxing::ArrayRef<char>(greyData, dataWidth*dataHeight),
         dataWidth,
         dataHeight,
         left,
@@ -179,7 +181,7 @@ extern "C" {
 
   void DecodeHints_setDataMatrix(void* hints_ptr, bool) {
     zxing::DecodeHints* hints  = (zxing::DecodeHints*)hints_ptr;
-    hints->addFormat(zxing::BarcodeFormat_DATA_MATRIX);
+    hints->addFormat(zxing::BarcodeFormat::DATA_MATRIX);
   }
 
   void Result_delete(void* result_ptr) {
@@ -199,7 +201,7 @@ extern "C" {
   }
 
   char const* BarcodeFormat_enum_to_string(zxing::BarcodeFormat format) {
-    return zxing::barcodeFormatNames[format];
+    return zxing::BarcodeFormat::barcodeFormatNames[format];
   }
 
   void String_delete(void* string_ptr) {
