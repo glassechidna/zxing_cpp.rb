@@ -63,15 +63,29 @@ class ZXing::Java::Image
     if degrees == 0
       self
     else
+      original = native
+
+      case original.getType
+      when java::awt::image::BufferedImage::TYPE_BYTE_INDEXED, java::awt::image::BufferedImage::TYPE_BYTE_BINARY
+        argb = java::awt::image::BufferedImage.new(original.getWidth,
+                                                    original.getHeight,
+                                                    java::awt::image::BufferedImage::TYPE_INT_ARGB)
+        g = argb.createGraphics
+        g.drawImage original, 0, 0, nil
+        g.dispose
+        original = argb
+      else;
+      end
+
       radians = java::lang::Math.toRadians degrees
 
       # Transform simply to find out the new bounding box (don't actually run the image through it)
       at = java::awt::geom::AffineTransform.new
-      at.rotate radians, self.width/2.0, self.height/2.0
+      at.rotate radians, original.getWidth/2.0, original.getHeight/2.0
       op =
         java::awt::image::AffineTransformOp.new at, java::awt::image::AffineTransformOp::TYPE_BICUBIC
         
-      r = op.getBounds2D native
+      r = op.getBounds2D original
       width = r.width.ceil
       height = r.height.ceil
 
@@ -79,11 +93,15 @@ class ZXing::Java::Image
       # to keep it centered
       at = java::awt::geom::AffineTransform.new
       at.rotate radians, width/2.0, height/2.0
-      at.translate((width-self.width)/2.0, (height-self.height)/2.0)
+      at.translate((width-original.getWidth)/2.0, (height-original.getHeight)/2.0)
+
       op =
         java::awt::image::AffineTransformOp.new at, java::awt::image::AffineTransformOp::TYPE_BICUBIC
 
-      self.class.new op.filter native, nil
+      rotated = op.filter(original, java::awt::image::BufferedImage.new(width,
+                                                                        height,
+                                                                        original.getType))
+      self.class.new rotated
     end
   end
 end

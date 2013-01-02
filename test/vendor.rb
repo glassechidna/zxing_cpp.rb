@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # -*- encoding: utf-8 -*-
 
+if ENV["EXPLICIT_LUMINANCE_CONVERSION"] != "true"
+  raise "must run tests with EXPLICIT_LUMINANCE_CONVERSION=true in the environment"
+end
+
 $:.push File.expand_path(File.join(File.dirname(__FILE__),"../lib"))
 
 if RUBY_VERSION =~ /^1.8/
@@ -85,6 +89,7 @@ end
 
 def add_driver file, image = nil
   driver = $drivers[file]
+  raise file if driver.nil?
   @drivers.push driver unless @drivers.include? driver
   if image.nil?
     driver[:images] = driver[:all_images]
@@ -142,9 +147,17 @@ end
 
     image = Image.read filename
     if !driver[:negative]    
-      expected_text = IO.read filename.sub(%r{\.[^.]+$}, ".txt")
-      if RUBY_VERSION !~ /^1.8/
-        expected_text.force_encoding "UTF-8"
+      expected_filename = Dir[filename.sub(%r{\.[^.]+$}, "")+".{txt,bin}"].first
+      if !expected_filename.index(".bin").nil?
+        expected_text = File.open(expected_filename, "r:iso-8859-1:utf-8") do |f|
+          f.read
+        end
+      elsif RUBY_VERSION !~ /^1.8/
+        expected_text = File.open(expected_filename, "r:utf-8") do |f|
+          f.read
+        end
+      else
+        expected_text = IO.read expected_filename
       end
     end
 
@@ -168,37 +181,50 @@ end
       decode = lambda do |try_harder|
         suffix = " (#{try_harder ? 'try harder, ' : ''}rotation: #{rotation})"
         result = nil
+        hints = {}
+        if try_harder
+          hints[:try_harder] = true
+        end
+        # hardcode for now ...
+        if driver[:format] == "PDF417"
+          hints[:possible_formats] = [:PDF417]
+        end
+        if driver[:format] == "DATA_MATRIX"
+          hints[:possible_formats] = [:DATA_MATRIX]
+        end
         begin
-          hints = {}
-          if try_harder
-            hints[:try_harder] = true
-          end
-          # hardcode for now ...
-          if driver[:format] == "PDF417"
-            hints[:possible_formats] = [:PDF417]
-          end
-          if driver[:format] == "DATA_MATRIX"
-            hints[:possible_formats] = [:DATA_MATRIX]
-          end
           result = reader.decode bitmap, hints
+          if driver[:negative]
+            printf("%s false positive: '%s' with format '%s' (rotation: %d)\n",
+                   try_harder ? "Try harder found" : "Found",
+                   result.text,
+                   result.format,
+                   rotation)
+            return true
+          end
         rescue NotFoundException => re
-          puts re.message + suffix
+          return false if driver[:negative]
+          puts re.class.to_s + suffix
           return false
         rescue ReaderException => re
-          puts re.message + suffix
+          return false if driver[:negative]
+          puts re.class.to_s + suffix
           return false
         rescue FormatException => fe
-          puts fe.message + suffix
+          return false if driver[:negative]
+          puts fe.class.to_s + suffix
           return false
         rescue IllegalArgumentException => iae
-          puts iae.message + suffix
+          return false if driver[:negative]
+          puts iae.class.to_s + suffix
           return false
         rescue ChecksumException => ce
-          puts ce.message + suffix
+          return false if driver[:negative]
+          puts ce.class.to_s + suffix
           return false
         end
-
-        if !driver[:negative] and driver[:format] != result.format
+        
+        if driver[:format] != result.format
           puts "Format mismatch: expected '#{driver[:format]}' but got '" +
             "#{result.format}' #{suffix}"
           return false;
@@ -215,7 +241,7 @@ end
           result_text.gsub!(/¥/, '\\')
         end
 
-        if !driver[:negative] and expected_text != result_text
+        if expected_text != result_text
           puts "Mismatch: expected '#{expected_text}' but got '#{result_text}' #{suffix}"
           return false;
         end
@@ -237,8 +263,10 @@ end
       
       decoded = decode.call false
       passed[test] = passed[test]+1 if decoded
-      decoded = decode.call true
-      tried_harder[test] = tried_harder[test]+1 if decoded
+      if !decoded || !driver[:negative]
+        decoded = decode.call true
+        tried_harder[test] = tried_harder[test]+1 if decoded
+      end
     end
   end
 
@@ -252,7 +280,7 @@ end
     if driver[:negative]
       print "  #{passed[test]+tried_harder[test]} of #{2*driver[:images].length} images passed"
       if driver[:images].length == driver[:all_images].length
-        print " (#{mustPass} required)"
+        print " (#{mustPass} allowed)"
       end
       puts
     else
