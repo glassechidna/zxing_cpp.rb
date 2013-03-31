@@ -7,6 +7,7 @@
 #include <zxing/oned/Code39Reader.h>
 #include <zxing/common/GreyscaleLuminanceSource.h>
 #include <zxing/common/HybridBinarizer.h>
+#include <zxing/FormatException.h>
 #include <zxing/ReaderException.h>
 #include <zxing/common/reedsolomon/ReedSolomonException.h>
 #include <zxing/common/IllegalArgumentException.h>
@@ -50,6 +51,8 @@ extern "C" {
       result = new_exception_data("zxing::IllegalArgumentException", e);
     } catch(zxing::ReedSolomonException const& e) {
       result = new_exception_data("zxing::ReedSolomonException", e);
+    } catch(zxing::FormatException const& e) {
+      result = new_exception_data("zxing::FormatException", e);
     } catch(zxing::ReaderException const& e) {
       result = new_exception_data("zxing::ReaderException", e);
     } catch(zxing::Exception const& e) {

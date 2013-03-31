@@ -124,7 +124,7 @@ if !java && !macruby
   file "vendor/zxing/cpp/build/libzxing.a" =>
     Dir["vendor/zxing/cpp/core/src/**/*.{h,cpp}"] do
     Dir.chdir "vendor/zxing/cpp" do
-      sh "python scons/scons.py PIC=yes lib"
+      sh "python scons/scons.py DEBUG=false PIC=yes lib"
     end
   end
   file "lib/zxing/Makefile" => [ "lib/zxing/extconf.rb",

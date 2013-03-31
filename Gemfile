@@ -3,7 +3,7 @@
 java = RUBY_PLATFORM =~ /java/
 macruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == "macruby"
 
-source :rubygems
+source "https://rubygems.org"
 
 if !java && !macruby
   gem 'ffi'

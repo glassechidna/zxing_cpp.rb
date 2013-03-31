@@ -178,8 +178,10 @@ end
       binarizer = Common::HybridBinarizer.new source
       bitmap = BinaryBitmap.new binarizer
 
+      time = Time.now
+
       decode = lambda do |try_harder|
-        suffix = " (#{try_harder ? 'try harder, ' : ''}rotation: #{rotation})"
+        suffix = "(#{try_harder ? 'try harder, ' : ''}rotation: #{rotation})"
         result = nil
         hints = {}
         if try_harder
@@ -194,6 +196,8 @@ end
         end
         begin
           result = reader.decode bitmap, hints
+          print_time = false
+          print_time and p [Time.now - time, try_harder, rotation]
           if driver[:negative]
             printf("%s false positive: '%s' with format '%s' (rotation: %d)\n",
                    try_harder ? "Try harder found" : "Found",
@@ -202,25 +206,30 @@ end
                    rotation)
             return true
           end
-        rescue NotFoundException => re
+        rescue NotFoundException => e
+          print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
-          puts re.class.to_s + suffix
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
-        rescue ReaderException => re
+        rescue ReaderException => e
+          print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
-          puts re.class.to_s + suffix
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
-        rescue FormatException => fe
+        rescue FormatException => e
+          print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
-          puts fe.class.to_s + suffix
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
         rescue IllegalArgumentException => iae
+          print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
-          puts iae.class.to_s + suffix
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
         rescue ChecksumException => ce
+          print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
-          puts ce.class.to_s + suffix
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
         end
         
@@ -268,6 +277,7 @@ end
         tried_harder[test] = tried_harder[test]+1 if decoded
       end
     end
+
   end
 
   total_found = 0;
