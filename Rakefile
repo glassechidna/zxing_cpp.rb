@@ -46,12 +46,12 @@ task :clean do
   if java
     if File.exist? "vendor/zxing/core/build"
       Dir.chdir "vendor/zxing/core" do
-        sh "ant clean"
+        sh "mvn clean"
       end
     end
     if File.exist? "vendor/zxing/javase/build" 
       Dir.chdir "vendor/zxing/javase" do
-        sh "ant clean"
+        sh "mvn clean"
       end
     end
   end
@@ -59,35 +59,42 @@ end
 
 zxing = "vendor/zxing"
 
+mvn_opts = "-Dmaven.javadoc.skip=true -DskipTests=true"
+
 subdirs = []
 subdirs += [:aztec, :datamatrix, :negative, :oned]
 subdirs += [:rss, :"rss/expanded"] if java
 subdirs += [:qrcode, :pdf417]
 if java
   if File.exists? "#{zxing}/core"
-    file "#{zxing}/core/core.jar" do
-      sh "ant -f #{zxing}/core/build.xml build"
+    file "#{zxing}/core/target/core-2.2-SNAPSHOT.jar" do
+      chdir "#{zxing}/core" do
+        sh "mvn #{mvn_opts} package"
+      end
     end
-    file "lib/zxing/core.jar" => "#{zxing}/core/core.jar" do
-      cp "#{zxing}/core/core.jar", "lib/zxing/core.jar"
+    file "lib/zxing/core.jar" => "#{zxing}/core/target/core-2.2-SNAPSHOT.jar" do
+      cp "#{zxing}/core/target/core-2.2-SNAPSHOT.jar", "lib/zxing/core.jar"
     end
   end
 
   if File.exists? "#{zxing}/javase"
-    file "#{zxing}/javase/javase.jar" => "#{zxing}/core/core.jar" do
-      sh "ant -f #{zxing}/javase/build.xml build"
+    file "#{zxing}/javase/target/javase-2.2-SNAPSHOT.jar" =>
+      "#{zxing}/core/target/core-2.2-SNAPSHOT.jar" do
+      chdir "#{zxing}/javase" do
+        sh "mvn #{mvn_opts} package"
+      end
     end
-    file "lib/zxing/javase.jar" => "#{zxing}/javase/javase.jar" do
-      cp "#{zxing}/javase/javase.jar", "lib/zxing/javase.jar"
+    file "lib/zxing/javase.jar" => "#{zxing}/javase/target/javase-2.2-SNAPSHOT.jar" do
+      cp "#{zxing}/javase/target/javase-2.2-SNAPSHOT.jar", "lib/zxing/javase.jar"
     end
   end
 
   namespace :compile do
     task :core do
-      sh "ant -f #{zxing}/core/build.xml build && cp #{zxing}/core/core.jar lib/zxing/core.jar"
+      sh "(cd #{zxing}/core && mvn #{mvn_opts} package) && cp #{zxing}/core/target/core-2.2-SNAPSHOT.jar lib/zxing/core.jar"
     end
     task :javase do
-      sh "ant -f #{zxing}/javase/build.xml build && cp #{zxing}/javase/javase.jar lib/zxing/javase.jar"
+      sh "(cd #{zxing}/javase && mvn #{mvn_opts} package) && cp #{zxing}/javase/target/javase-2.2-SNAPSHOT.jar lib/zxing/javase.jar"
     end
   end
 
