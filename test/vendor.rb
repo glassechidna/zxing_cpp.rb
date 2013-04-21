@@ -149,7 +149,7 @@ end
     if !driver[:negative]    
       expected_filename = Dir[filename.sub(%r{\.[^.]+$}, "")+".{txt,bin}"].first
       if !expected_filename.index(".bin").nil?
-        expected_text = File.open(expected_filename, "r:iso-8859-1:utf-8") do |f|
+        expected_text = File.open(expected_filename, "r:binary") do |f|
           f.read
         end
       elsif RUBY_VERSION !~ /^1.8/
@@ -211,6 +211,11 @@ end
           return false if driver[:negative]
           puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
+        rescue ReedSolomonException => e
+          print_time and p [Time.now - time, try_harder, rotation]
+          return false if driver[:negative]
+          puts [e.class.to_s, e.to_s, suffix].join(" ")
+          return false
         rescue ReaderException => e
           print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
@@ -221,12 +226,12 @@ end
           return false if driver[:negative]
           puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
-        rescue IllegalArgumentException => iae
+        rescue IllegalArgumentException => e
           print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
           puts [e.class.to_s, e.to_s, suffix].join(" ")
           return false
-        rescue ChecksumException => ce
+        rescue ChecksumException => e
           print_time and p [Time.now - time, try_harder, rotation]
           return false if driver[:negative]
           puts [e.class.to_s, e.to_s, suffix].join(" ")
@@ -241,12 +246,13 @@ end
 
         result_text = result.text
 
-        # this is a hack, but the expected text assumes the SJIS 0x5c is \ but iconv (correctly?) converts
-        # it to ¥
-
+        # this is a hack, but the expected text assumes the SJIS 0x5c
+        # is \ but iconv (correctly?) converts it to ¥
         
         # not sure about this ...
-        if RUBY_VERSION =~ /^1.[89]/
+        if expected_text.encoding == Encoding.find("BINARY")
+          result_text.force_encoding("BINARY")
+        elsif RUBY_VERSION =~ /^1.[89]/
           result_text.gsub!(/¥/, '\\')
         end
 

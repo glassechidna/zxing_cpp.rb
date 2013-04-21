@@ -60,13 +60,13 @@ end
 zxing = "vendor/zxing"
 
 subdirs = []
-subdirs += [:aztec, :datamatrix, :negative, :oned ]
-subdirs += [:rss, :"rss/expanded", :pdf417] if java
-subdirs += [:qrcode]
+subdirs += [:aztec, :datamatrix, :negative, :oned]
+subdirs += [:rss, :"rss/expanded"] if java
+subdirs += [:qrcode, :pdf417]
 if java
   if File.exists? "#{zxing}/core"
     file "#{zxing}/core/core.jar" do
-      sh "ant -f #{zxing}/core/build.xml compile"
+      sh "ant -f #{zxing}/core/build.xml build"
     end
     file "lib/zxing/core.jar" => "#{zxing}/core/core.jar" do
       cp "#{zxing}/core/core.jar", "lib/zxing/core.jar"

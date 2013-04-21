@@ -18,6 +18,7 @@ module ZXing
   autoload :Exception, 'zxing/exception'
   autoload :BadImageException, 'zxing/bad_image_exception'
   autoload :NotFoundException, 'zxing/not_found_exception'
+  autoload :ReedSolomonException, 'zxing/reed_solomon_exception'
   autoload :ReaderException, 'zxing/reader_exception'
   autoload :IllegalArgumentException, 'zxing/illegal_argument_exception'
   autoload :ChecksumException, 'zxing/checksum_exception'
