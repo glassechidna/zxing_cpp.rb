@@ -23,11 +23,7 @@ zxing.rb is a Ruby interface to the ZXing barcode library.
 
 == FEATURES:
 
-* Supports ZXing Java under jruby
-* Supports ZXing C++ under ruby 1.8 and 1.9
-
-I've played with MacRuby but it was a while ago and I don't think I
-ever integrated that support with this (proto)gem.
+* Supports ZXing C++
 
 == SUPPORT:
 

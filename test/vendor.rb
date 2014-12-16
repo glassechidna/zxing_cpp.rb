@@ -108,11 +108,7 @@ def add_image image
 end
 
 files.each do |file|
-  if file =~ /.java$/
-    add_driver file
-  else
-    add_image file
-  end
+  add_image file
 end
 
 @drivers.each do |driver|

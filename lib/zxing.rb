@@ -1,9 +1,7 @@
 module ZXing
   autoload :Common, 'zxing/common'
 
-  autoload :Java, 'zxing/java'
   autoload :FFI, 'zxing/ffi'
-  autoload :ObjC, 'zxing/objc'
   autoload :RMagick, 'zxing/rmagick'
 
   autoload :Image, 'zxing/image'
@@ -31,26 +29,22 @@ module ZXing
   autoload :QRCode, 'zxing/qrcode'
   autoload :Aztec, 'zxing/aztec'
 
-  if !defined? RUBY_ENGINE or RUBY_ENGINE != "macruby"
-    def decode *args
-      begin
-        p args
-        raise "hell"
-        decode!(*args)
-      rescue Exception => e
-        nil
-      end
+  def decode *args
+    begin
+      decode!(*args)
+    rescue Exception => e
+      nil
     end
-
-    def decode! argument
-      image = Image.read argument
-      source = LuminanceSource.new image
-      binarizer = Common::HybridBinarizer.new source
-      bitmap = BinaryBitmap.new binarizer
-      ZXing::MultiFormatReader.new.decode(bitmap).text
-    end
-
-    module_function :decode, :decode!
   end
+
+  def decode! argument
+    image = Image.read argument
+    source = LuminanceSource.new image
+    binarizer = Common::HybridBinarizer.new source
+    bitmap = BinaryBitmap.new binarizer
+    ZXing::MultiFormatReader.new.decode(bitmap).text
+  end
+
+  module_function :decode, :decode!
 
 end

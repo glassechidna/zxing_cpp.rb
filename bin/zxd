@@ -15,8 +15,6 @@ options = {
   :rotation => 0
 }
 
-macruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == "macruby"
-
 OptionParser.new do |o|
   o.on('-r', '--rotate rotation') do |r|
     options[:rotation] = r
@@ -35,26 +33,6 @@ OptionParser.new do |o|
   end
   o.on('-q', '--qr') do
     options[:qr] = true
-  end
-  if macruby
-    o.on('-c', '--capture') do
-      options[:capture] = true
-    end
-    o.on('-p', '--preview') do
-      options[:preview] = true
-    end
-    o.on('--nopreview', '--no-preview') do
-      options[:preview] = false
-    end
-    o.on('-C', '--continuous') do
-      options[:continuous] = true
-    end
-    o.on('-B', '--show-binary', '--showbinary') do
-      options[:show_binary] = true
-    end
-    o.on('-L', '--show-luminance', '--showluminance') do
-      options[:show_luminance] = true
-    end
   end
 end.parse!
 
@@ -110,11 +88,4 @@ ARGV.each_with_index do |uri,i|
       raise nfe if !html
     end
   end
-end
-
-if macruby && (options[:capture] || options[:preview])
-  require 'zxing/objc/zxd'
-  app = NSApplication.sharedApplication
-  app.delegate = AppDelegate.new options
-  app.run
 end

@@ -8,7 +8,6 @@ module ZXing
   VERSION_INFO['ruby']['platform']      = ::RUBY_PLATFORM
   VERSION_INFO['ruby']['engine']        = defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'mri'
 
-  VERSION_INFO['ruby']['jruby']         = ::JRUBY_VERSION if RUBY_PLATFORM == "java"
   if defined?(LIBZXING_VERSION)
     VERSION_INFO['libzxing']              = {}
     VERSION_INFO['libzxing']['binding']   = 'extension'

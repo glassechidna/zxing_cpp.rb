@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
 
   s.authors = ["Steven Parkes"]
   s.email = ["smparkes@smparkes.net"]
-  s.description = "An interface to the zxing decoder libraries. Supports zxing java under jruby and zxing C++ under 1.8.7/1.9.2 (and macruby?)."
+  s.description = "An interface to the zxing C++ decoder library."
 
   s.files = Dir.glob("{lib,spec}/**/*") + %w(README.rdoc CHANGELOG.rdoc)
   s.extra_rdoc_files = ["README.rdoc"]
