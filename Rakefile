@@ -22,82 +22,56 @@ Dir["lib/zxing/zxing.*"].each do |file|
   end
 end
 
-file "vendor/zxing" do
-  sh "git submodule update --init"
+file "vendor/zxing-cpp" do
+  sh "git submodule update --init --recursive"
 end
 
-task :compile => "vendor/zxing"
+task :compile => "vendor/zxing-cpp"
+
+CPP_BUILD_DIR = "vendor/zxing-cpp/build"
+ZXING_CPP_LIB = "#{CPP_BUILD_DIR}/libzxing.a"
+SHARED_LIB = "lib/zxing/zxing#{shared_ext}"
 
 task :clean do
-  if File.exist? "vendor/zxing/cpp/build" 
-    Dir.chdir "vendor/zxing/cpp" do
-      sh "python scons/scons.py -c"
-    end
+  rm_rf CPP_BUILD_DIR if File.exist? CPP_BUILD_DIR
+end
+
+# ZXing C++ static library
+
+file "#{CPP_BUILD_DIR}/Makefile" => "vendor/zxing-cpp/CMakeLists.txt" do
+  Dir.mkdir CPP_BUILD_DIR unless File.exist? CPP_BUILD_DIR
+  Dir.chdir CPP_BUILD_DIR do
+    sh "cmake -DBUILD_SHARED_LIBS:BOOL=OFF .."
   end
 end
 
-subdirs = []
-subdirs += [:aztec, :datamatrix, :negative, :oned]
-subdirs += [:qrcode, :pdf417]
-
-file "vendor/zxing/cpp/build/libzxing.a" =>
-  Dir["vendor/zxing/cpp/core/src/**/*.{h,cpp}"] do
-  Dir.chdir "vendor/zxing/cpp" do
-    sh "python scons/scons.py DEBUG=false PIC=yes lib"
+file ZXING_CPP_LIB => Dir["vendor/zxing-cpp/core/src/**/*.{h,cpp}"] + ["#{CPP_BUILD_DIR}/Makefile"] do
+  Dir.chdir CPP_BUILD_DIR do
+    sh "make"
   end
 end
-file "lib/zxing/Makefile" => [ "lib/zxing/extconf.rb",
-                               "vendor/zxing/cpp/build/libzxing.a" ] do
+
+# FFI friendly C shared library
+
+file "lib/zxing/Makefile" => [ "lib/zxing/extconf.rb", ZXING_CPP_LIB ] do
   Dir.chdir "lib/zxing" do
     ruby "extconf.rb"
   end
 end
-file "lib/zxing/zxing#{shared_ext}" => [ "lib/zxing/Makefile",
-                                         "lib/zxing/zxing.cc",
-                                         "vendor/zxing/cpp/build/libzxing.a" ] do
-  sh "cd lib/zxing && make"
+
+file SHARED_LIB => [ "lib/zxing/Makefile", "lib/zxing/zxing.cc", ZXING_CPP_LIB ] do
+  Dir.chdir "lib/zxing" do
+    sh "make"
+  end
 end
+
 task :recompile do
-  file("vendor/zxing/cpp/build/libzxing.a").execute
-  rm_f "lib/zxing/zxing#{shared_ext}"
-  file("lib/zxing/zxing#{shared_ext}").execute
+  Rake::Task["clean"].invoke
+  Rake::Task["compile"].invoke
 end
+
 desc "compile zxing shared library"
-task :compile => "lib/zxing/zxing#{shared_ext}"
-
-namespace :zxing do
-  namespace :test do
-    subdirs.each do |subdir|
-      namespace subdir do
-        desc "run #{subdir} tests"
-        task :run do
-          args = [
-                  # "ruby", "-Ilib",
-                  "test/vendor.rb" ] +
-            Dir["vendor/zxing/**/#{subdir}/*BlackBox*TestCase.java"]
-          args.unshift "valgrind" if ENV["valgrind"]
-          args.unshift "env", "EXPLICIT_LUMINANCE_CONVERSION=true"
-          sh args.join(" ")
-        end
-      end
-      desc "compile and run #{subdir} tests"
-      task subdir => [ :compile, "test:#{subdir}:run" ]
-    end
-    task :run => subdirs.map { |subdir| "test:#{subdir}:run" }
-  end
-
-  desc "run all the zxing tests (optionally, only those maching [pattern])"
-  task :test, [ :pattern ] => :compile do |t, args|
-    if args[:pattern]
-      args = ["ruby", "-Ilib", "test/vendor.rb", args[:pattern]]
-      args.unshift "valgrind" if ENV["valgrind"]
-      args.unshift "env", "EXPLICIT_LUMINANCE_CONVERSION=true"
-      sh args.join(" ")
-    else
-      subdirs.each { |subdir| task("zxing:test:#{subdir}:run").execute }
-    end
-  end
-end
+task :compile => SHARED_LIB
 
 task(:default).clear
 task :default => :compile

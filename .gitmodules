@@ -1,3 +1,3 @@
-[submodule "vendor/zxing"]
-	path = vendor/zxing
-	url = git://github.com/zxing/zxing.git
+[submodule "vendor/zxing-cpp"]
+	path = vendor/zxing-cpp
+	url = https://github.com/glassechidna/zxing-cpp.git

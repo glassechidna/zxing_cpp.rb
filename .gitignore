@@ -1,3 +1,5 @@
+.DS_Store
+/.idea/
 /.rbenv-version
 /tmp
 /lib/zxing/Makefile
