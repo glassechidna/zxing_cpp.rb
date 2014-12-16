@@ -1,7 +1,7 @@
 require File.expand_path( File.dirname(__FILE__) + '/../test_helper')
 require 'zxing/decodable'
 
-class DecodableTest < Test::Unit::TestCase
+class DecodableTest < MiniTest::Test
 
   class Object::File
     include Decodable
@@ -31,7 +31,7 @@ class DecodableTest < Test::Unit::TestCase
     should "provide #decode! as well" do
       assert_equal @file.decode!, ZXing.decode(@file.path)
       assert_equal @uri.decode!, ZXing.decode(@uri.path)
-      assert_raise(ZXing::BadImageException) { @bad_uri.decode! }
+      assert_raises(ZXing::BadImageException) { @bad_uri.decode! }
     end
   end
 

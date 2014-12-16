@@ -1,6 +1,7 @@
 # -*- ruby -*-
 
 require 'rake/clean'
+require 'rake/testtask'
 
 require 'rubygems'
 
@@ -72,6 +73,12 @@ end
 
 desc "compile zxing shared library"
 task :compile => SHARED_LIB
+
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.test_files = FileList['test/test*.rb', 'test/zxing/test*.rb']
+  t.verbose = true
+end
 
 task(:default).clear
 task :default => :compile

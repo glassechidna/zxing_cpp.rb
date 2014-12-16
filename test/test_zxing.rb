@@ -1,7 +1,7 @@
 require File.expand_path( File.dirname(__FILE__) + '/test_helper')
 require 'zxing'
 
-class ZXingTest < Test::Unit::TestCase
+class ZXingTest < MiniTest::Test
   context "A QR decoder singleton" do
 
     class Foo < Struct.new(:v); def to_s; self.v; end; end
@@ -29,8 +29,8 @@ class ZXingTest < Test::Unit::TestCase
     end
 
     should "raise an exception if #decode! fails" do
-      assert_raise(ZXing::ReaderException,
-                   ZXing::NotFoundException) { @decoder.decode!(@google_logo) }
+      assert_raises(ZXing::ReaderException,
+                    ZXing::NotFoundException) { @decoder.decode!(@google_logo) }
     end
 
     should "decode objects that respond to #path" do
