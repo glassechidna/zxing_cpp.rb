@@ -37,12 +37,12 @@ module ZXing
     end
   end
 
-  def decode! argument
+  def decode! argument, hints = nil
     image = Image.read argument
     source = LuminanceSource.new image
     binarizer = Common::HybridBinarizer.new source
     bitmap = BinaryBitmap.new binarizer
-    ZXing::MultiFormatReader.new.decode(bitmap).text
+    ZXing::MultiFormatReader.new.decode(bitmap, hints).text
   end
 
   module_function :decode, :decode!

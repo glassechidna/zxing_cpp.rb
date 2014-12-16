@@ -7,6 +7,11 @@ class ZXing::FFI::Reader
     super ZXing::FFI::Library::ReaderPointer.new ptr
   end
 
+  # Hints hash supports:
+  #   :try_harder = true/false
+  #   :possible_formats = an array of known FORMAT_SYMBOLS
+  # FORMAT_SYMBOLS:
+  #   :DATA_MATRIX
   def decode bitmap, hints = nil
     hints ||= {}
     th = hints[:try_harder]
