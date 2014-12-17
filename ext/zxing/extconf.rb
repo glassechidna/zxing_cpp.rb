@@ -7,7 +7,7 @@ ZXING_CPP_BUILD = "#{ZXING_CPP}/build"
 
 Dir.mkdir ZXING_CPP_BUILD unless File.exist? ZXING_CPP_BUILD
 Dir.chdir ZXING_CPP_BUILD do
-  `cmake -DBUILD_SHARED_LIBS:BOOL=OFF ..`
+  `cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_CXX_FLAGS="-fPIC" ..`
 end
 
 Dir.chdir ZXING_CPP_BUILD do
