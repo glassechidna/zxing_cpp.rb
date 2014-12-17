@@ -1,5 +1,7 @@
 module ZXing; end
 
+require 'ffi'
+
 module ZXing::FFI
   autoload :Library, 'zxing/ffi/library'
 

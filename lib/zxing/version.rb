@@ -1,5 +1,5 @@
 module ZXing
-  VERSION = "0.1.0.pre.0" unless defined?(::ZXing::VERSION)
+  VERSION = "0.1.0" unless defined?(::ZXing::VERSION)
 
   VERSION_INFO = {}
   VERSION_INFO['warnings']              = []

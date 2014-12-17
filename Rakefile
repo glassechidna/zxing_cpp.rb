@@ -1,84 +1,28 @@
-# -*- ruby -*-
-
 require 'rake/clean'
+require 'rake/extensiontask'
 require 'rake/testtask'
 
-require 'rubygems'
+spec = Gem::Specification.load('zxing_cpp.gemspec')
 
-CLEAN.concat Dir["**/*.a"]
-CLEAN.concat Dir["**/*.so"]
-CLEAN.concat Dir["**/*.bundle"]
-CLEAN.concat Dir["**/*.dylib"]
-CLEAN.concat Dir["**/*.pyc"]
-CLEAN.concat Dir["lib/zxing/Makefile"]
-CLEAN.concat Dir["lib/zxing/zxing.o"]
-CLEAN.concat Dir["**/build"]
-
-shared_ext = ".so"
-Dir["lib/zxing/zxing.*"].each do |file|
-  case file
-  when %r{\.so$}; shared_ext = ".so"
-  when %r{\.dylib$}; shared_ext = ".dylib"
-  when %r{\.bundle$}; shared_ext = ".bundle"
+desc 'Regenerate Manifest.txt'
+task :manifest do
+  File.open('Manifest.txt', 'w') do |f|
+    f.puts(spec.files)
   end
 end
-
-file "vendor/zxing-cpp" do
-  sh "git submodule update --init --recursive"
-end
-
-task :compile => "vendor/zxing-cpp"
-
-CPP_BUILD_DIR = "vendor/zxing-cpp/build"
-ZXING_CPP_LIB = "#{CPP_BUILD_DIR}/libzxing.a"
-SHARED_LIB = "lib/zxing/zxing#{shared_ext}"
-
-task :clean do
-  rm_rf CPP_BUILD_DIR if File.exist? CPP_BUILD_DIR
-end
-
-# ZXing C++ static library
-
-file "#{CPP_BUILD_DIR}/Makefile" => "vendor/zxing-cpp/CMakeLists.txt" do
-  Dir.mkdir CPP_BUILD_DIR unless File.exist? CPP_BUILD_DIR
-  Dir.chdir CPP_BUILD_DIR do
-    sh "cmake -DBUILD_SHARED_LIBS:BOOL=OFF .."
-  end
-end
-
-file ZXING_CPP_LIB => Dir["vendor/zxing-cpp/core/src/**/*.{h,cpp}"] + ["#{CPP_BUILD_DIR}/Makefile"] do
-  Dir.chdir CPP_BUILD_DIR do
-    sh "make"
-  end
-end
-
-# FFI friendly C shared library
-
-file "lib/zxing/Makefile" => [ "lib/zxing/extconf.rb", ZXING_CPP_LIB ] do
-  Dir.chdir "lib/zxing" do
-    ruby "extconf.rb"
-  end
-end
-
-file SHARED_LIB => [ "lib/zxing/Makefile", "lib/zxing/zxing.cc", ZXING_CPP_LIB ] do
-  Dir.chdir "lib/zxing" do
-    sh "make"
-  end
-end
-
-task :recompile do
-  Rake::Task["clean"].invoke
-  Rake::Task["compile"].invoke
-end
-
-desc "compile zxing shared library"
-task :compile => SHARED_LIB
 
 Rake::TestTask.new do |t|
-  t.libs << "test"
+  t.libs << 'test'
   t.test_files = FileList['test/test*.rb', 'test/zxing/test*.rb']
   t.verbose = true
 end
 
-task(:default).clear
-task :default => :compile
+Gem::PackageTask.new(spec) do |pkg|
+  Rake::Task[:manifest].invoke
+end
+
+task :package => :manifest
+
+Rake::ExtensionTask.new('zxing', spec) do |ext|
+  ext.lib_dir = 'lib/zxing'
+end

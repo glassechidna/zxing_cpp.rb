@@ -1,15 +1,11 @@
 module ZXing; end
 module ZXing::FFI; end
 
-# require 'iconv'
-require 'ffi'
-
 module ZXing::FFI::Library
   extend ::FFI::Library
   lib = File.join File.dirname(__FILE__), ".."
   lib = File.expand_path lib
-  ffi_lib ::FFI::Library::LIBC,
-          Dir[lib.to_s+"/zxing.{bundle,dylib,so,dll,sl}"][0]
+  ffi_lib ::FFI::Library::LIBC, Dir[lib.to_s+"/zxing.{bundle,dylib,so,dll,sl}"][0]
 
   attach_function 'free', [:pointer], :void
 
