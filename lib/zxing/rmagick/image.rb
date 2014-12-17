@@ -7,34 +7,40 @@ class ZXing::RMagick::Image
   include ZXing::Image
   LuminanceSource = ZXing::FFI::Common::GreyscaleLuminanceSource
 
-  def self.read uri
-        if !(String === uri)
-      begin uri = uri.path; rescue; end
-    end
-
-    if !(String === uri)
-      begin uri = uri.to_s; rescue; end
-    end
-
-    require 'uri'
-    require 'pathname'
-
-    uri = URI.parse uri
-
-    if uri.scheme.nil?
-      uri.scheme = "file"
-      uri.path = Pathname.new(uri.path).realpath.to_s
-    end
- 
+  def self.read argument
     img = nil
 
-    begin
-      img = case uri.scheme
-            when "file"; Magick::Image.read(uri.path)[0]
-            else; Magick::Image.from_blob(fetch(uri).body)[0]
-            end
-    rescue Exception => e
-      raise ZXing::BadImageException.new e.message
+    if argument.is_a? String
+      if argument.encoding.name == Encoding.aliases['BINARY']
+        begin
+          img = Magick::Image.from_blob(argument)[0]
+        rescue Exception => e
+          # Because 'BINARY' is just an alias for ASCII-8BIT, if treating the
+          # argument as image blob failed, we should continue on and try treat
+          # the argument like a regular string.
+        end
+      end
+    end
+
+    if img.nil?
+      require 'uri'
+      require 'pathname'
+
+      uri = URI.parse(argument.respond_to?(:path) ? argument.path : argument.to_s)
+
+      if uri.scheme.nil?
+        uri.scheme = "file"
+        uri.path = Pathname.new(uri.path).realpath.to_s
+      end
+
+      begin
+        img = case uri.scheme
+                when "file"; Magick::Image.read(uri.path)[0]
+                else; Magick::Image.from_blob(fetch(uri).body)[0]
+              end
+      rescue Exception => e
+        raise ZXing::BadImageException.new e.message
+      end
     end
 
     # p Magick::Magick_version
