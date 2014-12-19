@@ -87,8 +87,8 @@ is yet to be written.
 
 == REQUIREMENTS:
 
-* Ruby (> 1.9)
-* CMake (> 2.8.0)
+* Ruby (>= 1.9)
+* CMake (>= 2.8.0)
 
 zxing.rb bundles a version of the ZXing C++ library (zxing-cpp).
 

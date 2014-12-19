@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.authors = ['Benjamin Dobell']
   s.email = ['benjamin.dobell@glassechidna.com.au']
-  s.description = 'An interface to the ZXing C++ (zxing-cpp) barcode and QR code library.'
+  s.description = 'A barcode and QR code library that works with regular Ruby (not just JRuby). This gem comes bundled with ZXing C++ (zxing-cpp) and interfaces with it using FFI. As such this gem works with most major Ruby distributions.'
   s.licenses = ['MIT', 'Apache-2.0']
 
   s.homepage = 'https://github.com/glassechidna/zxing_cpp.rb'
