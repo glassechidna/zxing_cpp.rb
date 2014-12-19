@@ -23,14 +23,14 @@ The {bug tracker}[https://github.com/glassechidna/zxing_cpp.rb/issues] is availa
   require 'zxing'
   result = ZXing.decode "myimage.png"
 
-zxing.rb also comes with a command that decodes images: zxd:
+zxing_cpp also comes with a command that decodes images: zxd:
 
   $ zxd filename.png
   <decoded contents>
 
 +zxd+ can take multiple arguments and the arguments can be URLs.
 
-zxing.rb provides access to many of the classes of ZXing classes like
+zxing_cpp provides access to many of the classes of ZXing classes like
 readers, luminance sources, binarizers, so you can mix and match your
 own applications much as you would with a native Java or C++ app. See
 +zxd+ and +test/vendor.rb+ for examples.
@@ -90,25 +90,24 @@ is yet to be written.
 * Ruby (>= 1.9)
 * CMake (>= 2.8.0)
 
-zxing.rb bundles a version of the ZXing C++ library (zxing-cpp).
+zxing_cpp bundles a version of the ZXing C++ library (zxing-cpp).
 
 == INSTALL:
 
-The gem has yet to be submitted to RubyGems. For now you must clone
-the repo and execute:
+If you're using RubyGems (probably), then simply add the following to your <tt>Gemfile</tt>:
+
+    gem 'zxing_cpp'
+
+Alternatively, you could clone the {zxing_cpp repo}[https://github.com/glassechidna/zxing_cpp.rb] and execute:
 
   rake gem
   gem install pkg/zxing_cpp-0.1.0.gem
-
-or add it zxing_cpp to your Gemfile:
-
-  gem 'zxing_cpp', git: 'https://github.com/glassechidna/zxing_cpp.rb.git', submodules: true
 
 == DEVELOPMENT:
 
   rake test
 
-<tt>rake test</tt> runs the zxing.rb unit tests.
+<tt>rake test</tt> runs the zxing_cpp unit tests.
 
 == LICENSE:
 
