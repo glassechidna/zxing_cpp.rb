@@ -1,9 +1,14 @@
-require 'RMagick'
+begin
+  # Support both newer 'rmagick' require and deprecated 'RMagick' require:
+  require 'rmagick'
+rescue LoadError => e
+  require 'RMagick'
+end
 
 module ZXing; end
 module ZXing::RMagick; end
 
-class ZXing::RMagick::Image 
+class ZXing::RMagick::Image
   include ZXing::Image
   LuminanceSource = ZXing::FFI::Common::GreyscaleLuminanceSource
 
